@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سين وجيم - مسابقة الفرق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Aref+Ruqaa:wght@700&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #0f1729;
+    --bg-panel: #16213a;
+    --gold: #e0a83c;
+    --gold-bright: #f4c563;
+    --teal: #1d8a7a;
+    --teal-bright: #26b09b;
+    --coral: #d65a4a;
+    --ink: #eef1f6;
+    --ink-dim: #9aa6bd;
+    --line: rgba(224,168,60,0.25);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background: radial-gradient(ellipse at top, #1a2744 0%, var(--bg-deep) 60%);
+    color: var(--ink);
+    font-family:'Tajawal', sans-serif;
+    min-height:100vh;
+    padding: 24px 16px 60px;
+  }
+  h1,h2,h3{ font-family:'Aref Ruqaa', serif; margin:0; }
+
+  .panel{
+    max-width: 560px; margin: 5vh auto; background: var(--bg-panel);
+    border: 1px solid var(--line); border-radius: 14px; padding: 32px 28px; text-align:center;
+  }
+  .panel h1{ font-size: 2.4rem; color: var(--gold-bright); }
+  .panel > p.sub{ color: var(--ink-dim); margin: 10px 0 26px; font-size:0.95rem; }
+
+  .team-input-row{ display:flex; gap:8px; margin-bottom:12px; }
+  .team-input-row input{
+    flex:1; padding: 12px 14px; border-radius: 8px;
+    border: 1px solid var(--line); background:#0f1729; color: var(--ink);
+    font-family:'Tajawal',sans-serif; font-size:1rem;
+  }
+  .team-input-row input:focus{ outline:2px solid var(--gold); }
+  .swatch{ width:44px; border-radius:8px; flex-shrink:0; border:1px solid var(--line); }
+
+  .btn-primary{
+    margin-top: 18px; width:100%; padding: 14px; border:none; border-radius: 8px;
+    background: var(--gold); color: #1a1300; font-family:'Tajawal',sans-serif;
+    font-weight:700; font-size: 1.05rem; cursor:pointer;
+    transition: background .15s ease, transform .1s ease;
+  }
+  .btn-primary:hover{ background: var(--gold-bright); }
+  .btn-primary:active{ transform: scale(0.98); }
+  .btn-primary:disabled{ opacity:.35; cursor:not-allowed; }
+
+  .btn-secondary{
+    margin-top:10px; width:100%; padding:11px; border-radius:8px;
+    background:transparent; border:1px solid var(--line); color:var(--ink-dim);
+    font-family:'Tajawal',sans-serif; font-size:0.9rem; cursor:pointer;
+  }
+  .btn-secondary:hover{ color:var(--ink); }
+
+  .cat-counter{ color: var(--gold-bright); font-weight:700; margin-bottom:16px; font-size:0.95rem; }
+  .cat-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:right; }
+  .cat-chip{
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
+    cursor:pointer; transition: all .15s ease; background:#0f1729;
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .cat-chip .icon{ font-size:1.3rem; }
+  .cat-chip .label{ font-weight:700; font-size:0.92rem; flex:1; }
+  .cat-chip.selected{ background: rgba(224,168,60,0.14); border-color: var(--gold); }
+  .cat-chip .check{
+    width:20px; height:20px; border-radius:5px; border:1px solid var(--line);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.8rem;
+  }
+  .cat-chip.selected .check{ background:var(--gold); color:#1a1300; border-color:var(--gold); }
+  @media (max-width:480px){ .cat-grid{ grid-template-columns: 1fr; } }
+
+  .repeat-label{ color: var(--ink-dim); font-size: 0.9rem; margin: 22px 0 10px; }
+  .repeat-row{ display:flex; gap:8px; }
+  .repeat-btn{
+    flex:1; padding: 11px 6px; border-radius: 8px; border: 1px solid var(--line);
+    background:#0f1729; color: var(--ink-dim); font-family:'Tajawal',sans-serif;
+    font-weight:700; font-size:0.9rem; cursor:pointer; transition: all .15s ease;
+  }
+  .repeat-btn.selected{ background: rgba(224,168,60,0.14); border-color: var(--gold); color: var(--gold-bright); }
+
+  #game{ display:none; max-width: 1100px; margin: 0 auto; }
+  .scoreboard{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom: 26px; }
+  .score-card{
+    background: var(--bg-panel); border-radius: 10px; padding: 12px 22px; text-align:center;
+    min-width: 130px; border-bottom: 4px solid var(--team-color, var(--gold));
+  }
+  .score-card .name{ font-weight:700; font-size:1.05rem; }
+  .score-card .pts{ font-size:1.8rem; font-weight:900; color: var(--gold-bright); margin-top:2px; }
+
+  .board-title{ text-align:center; color:var(--ink-dim); font-size:0.9rem; margin-bottom:14px; letter-spacing:0.5px;}
+
+  #board{ display:grid; gap:8px; }
+  .cat-header{
+    background: linear-gradient(180deg, var(--teal-bright), var(--teal));
+    color:#fff; padding: 12px 6px; border-radius: 8px; text-align:center;
+    font-weight:700; font-size: 0.9rem; min-height: 56px;
+    display:flex;align-items:center;justify-content:center; line-height:1.3;
+  }
+  .cell{
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 18px 4px; text-align:center; font-weight:900; font-size:1.3rem;
+    color: var(--gold-bright); cursor:pointer; transition: transform .12s ease, background .12s ease;
+  }
+  .cell:hover:not(.used){ background:#1c2b4a; transform: translateY(-2px); }
+  .cell.used{ background: transparent; border-color: rgba(255,255,255,0.06); color: rgba(255,255,255,0.15); cursor:default; }
+
+  @media (max-width: 640px){
+    .cat-header{ font-size:0.68rem; padding:8px 3px; min-height:44px;}
+    .cell{ padding:10px 2px; font-size:1rem; }
+  }
+
+  .overlay{ display:none; position:fixed; inset:0; background: rgba(6,10,20,0.82); align-items:center; justify-content:center; z-index: 50; padding: 20px; }
+  .overlay.show{ display:flex; }
+  .modal{ background: var(--bg-panel); border:1px solid var(--line); border-radius: 16px; max-width: 560px; width:100%; padding: 34px 30px; text-align:center; }
+  .modal .cat-tag{ color: var(--teal-bright); font-weight:700; font-size:0.85rem; margin-bottom: 6px; }
+  .modal .value-tag{ color: var(--gold-bright); font-weight:900; font-size: 1rem; margin-bottom: 18px; }
+  .modal .question{ font-size: 1.3rem; line-height:1.7; margin-bottom: 24px; min-height: 60px; }
+  .modal .question.quran{ font-family:'Amiri', serif; font-size:1.5rem; }
+  .modal .answer{
+    display:none; background: rgba(29,138,122,0.15); border: 1px solid var(--teal); border-radius: 10px;
+    padding: 14px 16px; font-size: 1.15rem; font-weight:700; color: var(--teal-bright); margin-bottom: 22px;
+  }
+  .modal .answer.show{ display:block; }
+  .btn{ border:none; border-radius:8px; padding: 11px 20px; font-family:'Tajawal',sans-serif; font-weight:700; font-size:0.95rem; cursor:pointer; transition: transform .1s ease, opacity .15s ease; }
+  .btn:active{ transform: scale(0.97); }
+  .btn-reveal{ background: var(--gold); color:#1a1300; }
+  .btn-reveal:hover{ background: var(--gold-bright); }
+  .award-row{ display:none; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px; }
+  .award-row.show{ display:flex; }
+  .btn-award{ background: var(--team-color, var(--teal)); color:#fff; }
+  .btn-award:hover{ opacity:0.85; }
+  .btn-close{ background: transparent; color: var(--ink-dim); border:1px solid var(--line); margin-top:6px;}
+  .btn-close:hover{ color: var(--ink); }
+
+  .footer-actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:36px; }
+  .footer-actions button{
+    background:transparent; border:1px solid var(--line); color: var(--ink-dim);
+    padding:10px 18px; border-radius:8px; font-family:'Tajawal',sans-serif; font-size:0.85rem; cursor:pointer;
+  }
+  .footer-actions button:hover{ color:var(--ink); border-color: var(--gold); }
+
+  .confirm-overlay{ display:none; position:fixed; inset:0; background:rgba(6,10,20,0.82); align-items:center; justify-content:center; z-index:60; padding:20px; }
+  .confirm-overlay.show{ display:flex; }
+  .confirm-box{ background:var(--bg-panel); border:1px solid var(--line); border-radius:14px; padding:28px 26px; max-width:380px; width:100%; text-align:center; }
+  .confirm-box p{ margin:0 0 20px; font-size:1rem; }
+  .confirm-row{ display:flex; gap:10px; }
+  .confirm-row button{ flex:1; padding:11px; border-radius:8px; border:none; font-family:'Tajawal',sans-serif; font-weight:700; cursor:pointer; }
+  .confirm-yes{ background:var(--coral); color:#fff; }
+  .confirm-no{ background:transparent; border:1px solid var(--line) !important; color:var(--ink); }
+
+  /* ---- Word game (ولا كلمة) ---- */
+  .word-box{
+    background: var(--bg-panel); border:2px solid var(--gold); border-radius: 18px;
+    max-width: 460px; width:100%; padding: 34px 28px; text-align:center;
+  }
+  .wg-title{ font-family:'Aref Ruqaa', serif; font-size: 1.8rem; color: var(--gold-bright); margin-bottom: 10px; }
+  .wg-sub{ color: var(--ink-dim); font-size: 0.95rem; margin: 6px 0; line-height:1.6; }
+  .wg-team-row{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+  .wg-team-btn{
+    padding: 13px; border-radius:10px; border:none; font-family:'Tajawal',sans-serif;
+    font-weight:700; font-size:1rem; cursor:pointer; color:#fff;
+  }
+  .wg-timer{ font-size: 3rem; font-weight:900; color: var(--coral); margin-bottom: 10px; font-family:'Aref Ruqaa', serif; }
+  .wg-word{ font-size: 2.2rem; font-weight:900; color: var(--gold-bright); margin-bottom: 18px; }
+  .wg-forbidden{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom: 26px; }
+  .wg-forbidden span{
+    background: rgba(214,90,74,0.15); border:1px solid var(--coral); color:#f2a89c;
+    padding: 6px 14px; border-radius: 8px; font-size:0.9rem; font-weight:700;
+  }
+  .wg-play-actions{ display:flex; gap:10px; margin-bottom: 16px; }
+  .wg-btn{ flex:1; padding: 16px; border-radius:10px; border:none; font-family:'Tajawal',sans-serif; font-weight:900; font-size:1.05rem; cursor:pointer; }
+  .wg-skip{ background: rgba(255,255,255,0.08); color: var(--ink-dim); }
+  .wg-correct{ background: var(--teal-bright); color:#06231e; }
+  .wg-score-live{ color: var(--ink-dim); font-size:0.9rem; }
+
+  #dgCanvas{
+    width: 100%; max-width: 440px; height: 300px;
+    background:#fff; border-radius: 10px; touch-action: none;
+    border: 2px solid var(--gold); cursor: crosshair;
+  }
+
+  #winnerOverlay{ z-index:70; }
+  #confettiLayer{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .confetti-piece{
+    position:absolute; top:-20px; width:10px; height:16px; opacity:0.9;
+    animation-name: confetti-fall; animation-timing-function: linear; animation-iteration-count: 1;
+    border-radius:2px;
+  }
+  @keyframes confetti-fall{
+    0%{ transform: translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform: translateY(110vh) rotate(540deg); opacity:0.8; }
+  }
+  .winner-box{
+    position:relative; z-index:2;
+    background: var(--bg-panel); border:2px solid var(--gold); border-radius: 18px;
+    max-width: 480px; width:100%; padding: 40px 30px; text-align:center;
+  }
+  .winner-trophy{ font-size: 4rem; margin-bottom: 6px; }
+  .winner-title{ font-family:'Aref Ruqaa', serif; font-size: 1.6rem; color: var(--ink-dim); margin-bottom: 6px; }
+  .winner-name{ font-family:'Aref Ruqaa', serif; font-size: 2.2rem; color: var(--gold-bright); font-weight:700; margin-bottom: 6px; }
+  .winner-score{ font-size: 1.1rem; color: var(--teal-bright); font-weight:700; margin-bottom: 16px; }
+  .winner-msg{ font-size: 1rem; color: var(--ink); margin-bottom: 22px; line-height:1.6; }
+  .winner-final-scores{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom: 26px; }
+  .winner-final-scores .mini-score{
+    background: rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 14px; font-size:0.85rem;
+    border-bottom: 3px solid var(--team-color, var(--gold));
+  }
+  .winner-actions{ display:flex; flex-direction:column; gap:10px; }
+</style>
+</head>
+<body>
+
+<div class="panel" id="loginScreen" style="display:none;">
+  <h1>سين وجيم</h1>
+  <p class="sub">أدخل اسم المستخدم وكلمة المرور للدخول</p>
+  <div class="team-input-row">
+    <input type="text" id="loginUser" placeholder="اسم المستخدم" style="text-align:right;" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+  </div>
+  <div class="team-input-row">
+    <input type="password" id="loginPass" placeholder="كلمة المرور" style="text-align:right;" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+  </div>
+  <div id="loginError" style="display:none; color:#e07a6b; font-size:0.85rem; margin-top:4px;">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+  <button class="btn-primary" id="loginBtn">دخول</button>
+</div>
+
+<div class="panel" id="setup">
+  <h1>سين وجيم</h1>
+  <p class="sub">أضف أسماء الفرق المتنافسة، وابدأ المسابقة</p>
+  <div id="teamInputs"></div>
+  <button class="btn-primary" id="nextToCatBtn">التالي: اختيار الفئات</button>
+</div>
+
+<div class="panel" id="catPicker" style="display:none;">
+  <h1>اختر الفئات</h1>
+  <p class="sub">اختاروا من 5 إلى 8 فئات لتشكيل لوحة المسابقة</p>
+  <div class="cat-counter" id="catCounter">0 محددة</div>
+  <div class="cat-grid" id="catGrid"></div>
+
+  <div class="repeat-label">كم مرة تتكرر كل قيمة نقاط بالخانة؟</div>
+  <div class="repeat-row" id="repeatRow">
+    <button class="repeat-btn" data-repeat="1">مرة واحدة</button>
+    <button class="repeat-btn selected" data-repeat="2">مرتين</button>
+    <button class="repeat-btn" data-repeat="3">3 مرات</button>
+  </div>
+
+  <button class="btn-primary" id="startBtn" disabled>ابدأ المسابقة</button>
+  <button class="btn-secondary" id="backToTeamsBtn">رجوع</button>
+</div>
+
+<div id="game">
+  <div class="scoreboard" id="scoreboard"></div>
+  <div class="board-title">اختاروا فئة وقيمة السؤال</div>
+  <div id="board"></div>
+  <div class="footer-actions">
+    <button id="newRoundBtn">لعبة جديدة بنفس الفرق</button>
+    <button id="fullResetBtn">تغيير الفرق والفئات</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="cat-tag" id="modalCat"></div>
+    <div class="value-tag" id="modalVal"></div>
+    <div id="modalMedia"></div>
+    <div class="question" id="modalQ"></div>
+    <div class="answer" id="modalA"></div>
+    <button class="btn btn-reveal" id="revealBtn">إظهار الإجابة</button>
+    <div class="award-row" id="awardRow"></div>
+    <button class="btn btn-close" id="closeBtn">إغلاق بدون نقاط</button>
+  </div>
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <p id="confirmMsg">هل أنت متأكد؟</p>
+    <div class="confirm-row">
+      <button class="confirm-yes" id="confirmYes">نعم، متأكد</button>
+      <button class="confirm-no" id="confirmNo">تراجع</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="wordGameOverlay">
+  <div class="word-box">
+    <!-- Step 1: pick team -->
+    <div id="wgStepTeam">
+      <div class="wg-title">ولا كلمة</div>
+      <p class="wg-sub">أي فريق يلعب هالكلمة؟</p>
+      <div class="wg-team-row" id="wgTeamRow"></div>
+    </div>
+
+    <!-- Step 2: play (single word, single timer) -->
+    <div id="wgStepPlay" style="display:none;">
+      <div class="wg-timer" id="wgTimer">30</div>
+      <div class="wg-word" id="wgWord">كلمة</div>
+      <div class="wg-forbidden" id="wgForbidden"></div>
+      <p class="wg-sub">ممنوع تقولون أي كلمة من الكلمات المحظورة فوق</p>
+      <div class="wg-play-actions">
+        <button class="wg-btn wg-skip" id="wgSkipBtn">ما عرفوا ❌</button>
+        <button class="wg-btn wg-correct" id="wgCorrectBtn">عرفوا ✅</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="drawGameOverlay">
+  <div class="word-box" style="max-width:520px;">
+    <!-- Step 1: pick team -->
+    <div id="dgStepTeam">
+      <div class="wg-title">رسم</div>
+      <p class="wg-sub">أي فريق يرسم هالكلمة؟</p>
+      <div class="wg-team-row" id="dgTeamRow"></div>
+    </div>
+
+    <!-- Step 2: reveal word to the artist only -->
+    <div id="dgStepReveal" style="display:none;">
+      <div class="wg-title">جهّزوا الرسام</div>
+      <p class="wg-sub">خلوا شخص وحد بس يشوف الكلمة، والباقي يبعدون عن الشاشة</p>
+      <div class="wg-word" id="dgWord">كلمة</div>
+      <button class="btn-primary" id="dgStartDrawBtn" style="margin-top:10px;">جاهزين، ابدأ الرسم</button>
+    </div>
+
+    <!-- Step 3: drawing canvas -->
+    <div id="dgStepDraw" style="display:none;">
+      <div class="wg-timer" id="dgTimer">60</div>
+      <canvas id="dgCanvas" width="440" height="320"></canvas>
+      <button class="btn-secondary" id="dgClearBtn" style="margin-top:8px;">مسح اللوحة</button>
+      <div class="wg-play-actions" style="margin-top:14px;">
+        <button class="wg-btn wg-skip" id="dgSkipBtn">ما عرفوا ❌</button>
+        <button class="wg-btn wg-correct" id="dgCorrectBtn">عرفوا ✅</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="winnerOverlay">
+  <div id="confettiLayer"></div>
+  <div class="winner-box">
+    <div class="winner-trophy">🏆</div>
+    <div class="winner-title" id="winnerTitle">انتهت المسابقة!</div>
+    <div class="winner-name" id="winnerName"></div>
+    <div class="winner-score" id="winnerScore"></div>
+    <div class="winner-msg" id="winnerMsg"></div>
+    <div class="winner-final-scores" id="winnerFinalScores"></div>
+    <div class="winner-actions">
+      <button class="btn-primary" id="winnerNewRoundBtn" style="margin-top:0;">لعبة جديدة بنفس الفرق</button>
+      <button class="btn-secondary" id="winnerFullResetBtn" style="margin-top:0;">تغيير الفرق والفئات</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TEAM_COLORS = ['#e0a83c','#26b09b','#d65a4a','#5b8fd6','#a06bd6','#d68fc4'];
+
+// ---- Login gate ----
+const VALID_USER = "Mulla Ali Challenge";
+const VALID_PASS = "Jasem5050";
+
+document.getElementById('loginBtn').addEventListener('click', attemptLogin);
+document.getElementById('loginPass').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') attemptLogin();
+});
+
+function attemptLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
+  if(u === VALID_USER && p === VALID_PASS){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('setup').style.display = 'block';
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+const CATEGORY_ICONS = {
+  "رياضة": "⚽", "دين": "🕌", "تاريخ": "📜", "ثقافة عامة": "🌍",
+  "جغرافيا": "🗺️", "علوم": "🔬", "أدب ولغة": "📖", "سينما وفن": "🎬",
+  "أعلام": "🚩", "معالم الكويت": "📍", "من هو المطرب": "🎵",
+  "معلومات عامة": "💡", "تقنية وتكنولوجيا": "💻", "ولا كلمة": "🤐", "خمن اللاعب": "🎽", "رسم": "🎨",
+  "من هذه الشخصية": "🌟"
+};
+
+const SPECIAL_CATEGORIES = ["ولا كلمة", "رسم"];
+
+const DRAW_WORDS = [
+  "شمس", "سيارة", "بيت", "شجرة", "قطة", "سمكة", "نجمة", "قلب", "مظلة", "ساعة",
+  "كرة", "سلحفاة", "طائرة", "زهرة", "جبل", "نظارة", "حذاء", "مفتاح", "كتاب", "هاتف",
+  "دراجة", "قوس قزح", "ثلج", "نار", "بحر", "قمر", "نحلة", "فراشة", "تفاحة", "موزة"
+];
+
+const TABOO_WORDS = [
+  {word:"هاتف", forbidden:["جوال","اتصال","رنة"]},
+  {word:"شمس", forbidden:["نهار","حرارة","ضوء"]},
+  {word:"مطر", forbidden:["ماء","سحاب","برد"]},
+  {word:"مدرسة", forbidden:["معلم","طالب","دراسة"]},
+  {word:"سيارة", forbidden:["عجلة","بنزين","قيادة"]},
+  {word:"طيارة", forbidden:["مطار","جناح","سفر"]},
+  {word:"ثلاجة", forbidden:["برودة","مطبخ","أكل"]},
+  {word:"كتاب", forbidden:["قراءة","صفحة","مكتبة"]},
+  {word:"شاطئ", forbidden:["بحر","رمل","سباحة"]},
+  {word:"مستشفى", forbidden:["طبيب","مريض","دواء"]},
+  {word:"قهوة", forbidden:["فنجان","كافيين","صباح"]},
+  {word:"قمر", forbidden:["ليل","نجوم","سماء"]},
+  {word:"مفتاح", forbidden:["باب","قفل","فتح"]},
+  {word:"نظارة", forbidden:["عين","رؤية","شمس"]},
+  {word:"ساعة", forbidden:["وقت","دقيقة","معصم"]},
+  {word:"جسر", forbidden:["نهر","عبور","طريق"]},
+  {word:"مطبخ", forbidden:["طبخ","أكل","فرن"]},
+  {word:"حديقة", forbidden:["أشجار","زهور","نزهة"]},
+  {word:"كرة قدم", forbidden:["ملعب","هدف","لاعب"]},
+  {word:"تلفاز", forbidden:["شاشة","قناة","ريموت"]},
+  {word:"مظلة", forbidden:["مطر","حماية","شمس"]},
+  {word:"جبل", forbidden:["قمة","تسلق","صخور"]},
+  {word:"سرير", forbidden:["نوم","غرفة","وسادة"]},
+  {word:"مرآة", forbidden:["انعكاس","وجه","زجاج"]},
+  {word:"دراجة", forbidden:["عجلتين","قيادة","رياضة"]},
+  {word:"مطعم", forbidden:["طعام","نادل","طلب"]},
+  {word:"صحراء", forbidden:["رمل","حر","جمل"]},
+  {word:"مسجد", forbidden:["صلاة","مئذنة","مسلمين"]},
+  {word:"مروحة", forbidden:["هواء","برودة","كهرباء"]},
+  {word:"حقيبة", forbidden:["سفر","ملابس","حمل"]},
+  {word:"مكتب", forbidden:["عمل","موظف","كرسي"]},
+  {word:"جوال", forbidden:["اتصال","رسالة","شاشة"]},
+  {word:"مسبح", forbidden:["سباحة","ماء","صيف"]},
+  {word:"مطرقة", forbidden:["مسمار","نجار","ضرب"]},
+  {word:"قلم", forbidden:["كتابة","ورقة","حبر"]}
+];
+
+const WORD_GAME_TIME = 60;
+
+function ytSearchUrl(text){
+  return "https://www.youtube.com/results?search_query=" + encodeURIComponent(text);
+}
+
+const DATA = {
+  "رياضة": {
+    100: [
+      {q:"كم عدد لاعبي كرة القدم في الملعب لكل فريق؟", a:"11 لاعبًا"},
+      {q:"كم عدد لاعبي كرة السلة في الملعب لكل فريق؟", a:"5 لاعبين"},
+      {q:"كم عدد أشواط مباراة كرة القدم الأساسية؟", a:"شوطان"},
+      {q:"كم عدد الحلقات في الشعار الأولمبي؟", a:"خمس حلقات"},
+      {q:"أي دولة استضافت كأس العالم لكرة القدم 2022؟", a:"قطر"},
+      {q:"كم عدد الأشواط في مباراة كرة اليد؟", a:"شوطان"},
+      {q:"في أي رياضة نستخدم (الراكيت) لضرب الكرة فوق شبكة؟", a:"التنس"},
+      {q:"كم عدد اللاعبين في فريق الهوكي على الجليد داخل الملعب؟", a:"6 لاعبين"},
+      {q:"ما اسم الرياضة الأولمبية التي تعتمد على السباحة بأنماط متعددة؟", a:"السباحة"},
+      {q:"كم عدد النقاط لتسجيلة من خلف خط الثلاث نقاط في كرة السلة؟", a:"3 نقاط"},
+      {q:"في أي رياضة يُستخدم القفاز للحماية أثناء القتال؟", a:"الملاكمة"},
+      {q:"ما اسم الرياضة التي تُلعب على الجليد بالانزلاق بحذاء خاص؟", a:"التزلج على الجليد"},
+      {q:"كم عدد الحُفر في ملعب الغولف القياسي؟", a:"18 حفرة"},
+      {q:"في أي رياضة نقول (كش ملك)؟", a:"الشطرنج"},
+      {q:"أي بطولة تنس تقام سنويًا في لندن على ملاعب عشبية؟", a:"بطولة ويمبلدون"}
+    ],
+    200: [
+      {q:"في أي رياضة يُستخدم مضرب صغير لضرب كرة خفيفة فوق طاولة؟", a:"تنس الطاولة"},
+      {q:"من هو صاحب الرقم القياسي العالمي في سباق 100 متر رجال؟", a:"يوسين بولت"},
+      {q:"من هو الملاكم الملقب بـ(الأعظم) في تاريخ الملاكمة؟", a:"محمد علي كلاي"},
+      {q:"كم عدد اللاعبين لكل فريق في ملعب الكرة الطائرة؟", a:"6 لاعبين"},
+      {q:"أي دولة فازت بأكبر عدد من كؤوس العالم لكرة القدم؟", a:"البرازيل"},
+      {q:"من الدولة التي استضافت أول كأس عالم لكرة القدم في قارة أفريقيا؟", a:"جنوب أفريقيا (2010)"},
+      {q:"كم عدد الأشواط الإضافية في مباراة كرة قدم بعد التعادل بالوقت الأصلي عادة؟", a:"شوطان إضافيان (15 دقيقة لكل شوط)"},
+      {q:"من الدولة التي فازت بأول بطولة كأس أمم أوروبا (يورو) عام 1960؟", a:"الاتحاد السوفيتي"},
+      {q:"ما اسم الحدث الرياضي الذي يقام كل 4 سنوات ويجمع رياضات متعددة عالميًا؟", a:"الألعاب الأولمبية"},
+      {q:"كم عدد لاعبي الفريق الواحد في رياضة الرغبي (الاتحاد الرغبي)؟", a:"15 لاعبًا"},
+      {q:"من الفريق الذي يحمل لقب (الملكي) في كرة القدم الإسبانية؟", a:"ريال مدريد"},
+      {q:"ما اسم البطولة الأمريكية لكرة السلة المحترفة؟", a:"الدوري الأمريكي للمحترفين (NBA)"},
+      {q:"في أي مدينة تقام سباقات فورمولا 1 الشهيرة في موناكو؟", a:"مونت كارلو"},
+      {q:"من الدولة التي اخترعت رياضة كرة القدم الحديثة بقوانينها؟", a:"إنجلترا"},
+      {q:"من الدول المضيفة لكأس العالم لكرة القدم القادمة عام 2026؟", a:"الولايات المتحدة وكندا والمكسيك"}
+    ],
+    300: [
+      {q:"من هو صاحب أكبر عدد من جوائز الكرة الذهبية حتى الآن؟", a:"ليونيل ميسي"},
+      {q:"من الدولة التي فازت بكأس العالم لكرة القدم 2018؟", a:"فرنسا"},
+      {q:"من هو اللاعب البرازيلي الملقب بـ(الظاهرة)؟", a:"رونالدو نازاريو"},
+      {q:"كم مرة فاز منتخب البرازيل بكأس العالم لكرة القدم حتى الآن؟", a:"5 مرات"},
+      {q:"أي مدينة استضافت الألعاب الأولمبية عام 2012؟", a:"لندن"},
+      {q:"ما اسم الدوري الإنجليزي الأعلى لكرة القدم؟", a:"الدوري الإنجليزي الممتاز (البريميرليغ)"},
+      {q:"من مدرب برشلونة الذي قاد الفريق للفوز بالسداسية التاريخية عام 2009؟", a:"بيب غوارديولا"},
+      {q:"كم مرة فاز ريال مدريد بدوري أبطال أوروبا تقريبًا حتى الآن؟", a:"15 مرة"},
+      {q:"من الدولة التي فازت بأول كأس أمم آسيا لكرة القدم؟", a:"كوريا الجنوبية (1956)"},
+      {q:"ما اسم النادي الإيطالي الملقب بـ(السيدة العجوز)؟", a:"يوفنتوس"},
+      {q:"ما اسم الجائزة التي يمنحها فيفا سنويًا لأفضل لاعب في العالم؟", a:"جائزة The Best FIFA"},
+      {q:"كم عدد فرق دوري كرة القدم الإنجليزي الممتاز؟", a:"20 فريقًا"},
+      {q:"أي دولتين فازتا بأكبر عدد من كؤوس أمم أوروبا (يورو)؟", a:"ألمانيا وإسبانيا"},
+      {q:"من هو أول لاعب يسجل هاتريك في نهائي كأس العالم؟", a:"جيوفري هيرست (إنجلترا 1966)"},
+      {q:"ما اسم البطولة القارية الأمريكية الجنوبية لمنتخبات كرة القدم؟", a:"كوبا أمريكا"}
+    ],
+    400: [
+      {q:"من الدولة التي فازت بأول نسخة من كأس العالم لكرة القدم عام 1930؟", a:"الأوروغواي"},
+      {q:"ما اسم البطولة القارية لمنتخبات كرة القدم الأوروبية؟", a:"كأس الأمم الأوروبية (يورو)"},
+      {q:"أي دولة استضافت أولمبياد 2016؟", a:"البرازيل"},
+      {q:"كم عدد الأشواط في مباراة الملاكمة الاحترافية القياسية؟", a:"12 شوطًا"},
+      {q:"أي دولتين اشتركتا في استضافة كأس العالم لكرة القدم 2002؟", a:"اليابان وكوريا الجنوبية"},
+      {q:"من هو أول لاعب أفريقي يفوز بجائزة الكرة الذهبية؟", a:"جورج ويا (ليبيريا، 1995)"},
+      {q:"من هو المدرب الذي قاد منتخب ألمانيا الغربية للفوز بكأس العالم 1990؟", a:"فرانز بيكنباور"},
+      {q:"كم عدد المنتخبات المشاركة في كأس العالم لكرة القدم اعتبارًا من نسخة 2026؟", a:"48 منتخبًا"},
+      {q:"ما اسم النادي الإنجليزي الملقب بـ(الشياطين الحمر)؟", a:"مانشستر يونايتد"},
+      {q:"ما اسم النادي الإنجليزي الملقب بـ(المدفعجية)؟", a:"آرسنال"},
+      {q:"ما اسم البطولة الأفريقية القارية لمنتخبات كرة القدم؟", a:"كأس الأمم الأفريقية"},
+      {q:"ما اسم الرياضة الأولمبية الشتوية التي تعتمد على الانزلاق بزلاجات فوق مضمار جليدي منحني؟", a:"البوبسلي"},
+      {q:"من هو صاحب أكبر عدد أهداف في تاريخ دوري أبطال أوروبا؟", a:"كريستيانو رونالدو"},
+      {q:"ما اسم النادي الألماني الأكثر تتويجًا بالدوري الألماني؟", a:"بايرن ميونخ"},
+      {q:"أي دولة استضافت كأس العالم لكرة القدم عام 2014؟", a:"البرازيل"}
+    ],
+    500: [
+      {q:"في أي عام استضافت السعودية أول سباق فورمولا 1 على أراضيها؟", a:"2021"},
+      {q:"أي منتخب عربي كان أول من وصل لدور الثمانية في كأس العالم لكرة القدم؟", a:"المغرب (2022)"},
+      {q:"في أي عام أقيمت أول بطولة لكأس أمم أفريقيا؟", a:"1957"},
+      {q:"من هو حامل الرقم القياسي في عدد الأهداف الدولية لمنتخب وطني رجالي؟", a:"كريستيانو رونالدو"},
+      {q:"من هو المدرب الذي قاد إيطاليا للفوز بكأس العالم 2006؟", a:"مارسيلو ليبي"},
+      {q:"من هو أول لاعب فاز بكأس العالم كلاعب ثم كمدرب لاحقًا؟", a:"ماريو زاغالو (البرازيل)"},
+      {q:"ما اسم أول دولة آسيوية تستضيف كأس العالم لكرة القدم؟", a:"اليابان (بالاشتراك مع كوريا الجنوبية 2002)"},
+      {q:"من هو اللاعب المكسيكي الذي شارك في 5 نسخ مختلفة من كأس العالم؟", a:"رافائيل ماركيز"},
+      {q:"ما اسم أول اتحاد كرة قدم تأسس في العالم؟", a:"الاتحاد الإنجليزي لكرة القدم (تأسس 1863)"},
+      {q:"في أي نسخة من كأس العالم استُخدمت تقنية حكم الفيديو المساعد (VAR) لأول مرة؟", a:"نسخة روسيا 2018"},
+      {q:"في أي مدينة أقيمت أول ألعاب أولمبية حديثة عام 1896؟", a:"أثينا"},
+      {q:"من هو المدرب الوحيد الذي فاز بكأس العالم مرتين متتاليتين؟", a:"فيتوريو بوتسو (إيطاليا، 1934 و1938)"},
+      {q:"ما اسم أول دولة عربية تتأهل لكأس العالم لكرة القدم؟", a:"مصر (1934)"},
+      {q:"من هو أصغر لاعب يفوز بكأس العالم في التاريخ؟", a:"بيليه (17 عامًا، 1958)"},
+      {q:"من هي أول امرأة تحكم مباراة رجالية في كأس العالم؟", a:"ستيفاني فرابار (فرنسا، 2022)"}
+    ]
+  },
+  "دين": {
+    100: [
+      {q:"كم عدد أركان الإسلام؟", a:"خمسة أركان"},
+      {q:"كم عدد الصلوات المفروضة في اليوم؟", a:"خمس صلوات"},
+      {q:"في أي شهر هجري تؤدى فريضة الحج؟", a:"ذو الحجة"},
+      {q:"ما اسم المدينة التي بها الكعبة المشرفة؟", a:"مكة المكرمة"},
+      {q:"كم عدد ركعات صلاة الفجر؟", a:"ركعتان"},
+      {q:"ما اسم الكتاب المقدس عند المسلمين؟", a:"القرآن الكريم"},
+      {q:"كم عدد أركان الإيمان؟", a:"ستة أركان"},
+      {q:"ما هو أول ركن من أركان الإسلام؟", a:"الشهادتان"},
+      {q:"كم عدد الصلوات المفروضة يوم الجمعة تحديدًا بدل الظهر؟", a:"صلاة واحدة (الجمعة)"},
+      {q:"ما هو الشهر الذي يصوم فيه المسلمون؟", a:"شهر رمضان"},
+      {q:"ما اسم المدينة التي هاجر إليها النبي من مكة؟", a:"المدينة المنورة"},
+      {q:"كم عدد ركعات صلاة الظهر؟", a:"أربع ركعات"},
+      {q:"ما اسم صلاة الليل التي تؤدى في رمضان جماعة؟", a:"صلاة التراويح"},
+      {q:"ما هو اليوم الذي يُستحب فيه صيام النافلة أسبوعيًا مرتين؟", a:"الاثنين والخميس"},
+      {q:"ما اسم الزكاة الواجبة عند نهاية شهر رمضان؟", a:"زكاة الفطر"}
+    ],
+    200: [
+      {q:"من هو الخليفة الملقب بـ(الفاروق)؟", a:"عمر بن الخطاب"},
+      {q:"من هو النبي الذي عُرف بلقب (أبو الأنبياء)؟", a:"النبي إبراهيم عليه السلام"},
+      {q:"من هو آخر الأنبياء والرسل؟", a:"محمد صلى الله عليه وسلم"},
+      {q:"في أي مدينة وُلد النبي محمد صلى الله عليه وسلم؟", a:"مكة المكرمة"},
+      {q:"من هو النبي الذي التقمه الحوت؟", a:"النبي يونس عليه السلام"},
+      {q:"كم عدد أيام صيام شهر رمضان عادةً؟", a:"29 أو 30 يومًا"},
+      {q:"ما اسم صلاة الجماعة التي تؤدى يوم الجمعة ظهرًا؟", a:"صلاة الجمعة"},
+      {q:"ما اسم المسجد الذي يُشد إليه الرحال مع المسجد الحرام والمسجد النبوي؟", a:"المسجد الأقصى"},
+      {q:"من هو النبي الذي أُرسل إلى قوم عاد؟", a:"النبي هود عليه السلام"},
+      {q:"من هو النبي الذي أُرسل إلى قوم ثمود؟", a:"النبي صالح عليه السلام"},
+      {q:"ما اسم الكتاب السماوي الذي أُنزل على النبي عيسى عليه السلام؟", a:"الإنجيل"},
+      {q:"من هو أبو الرسول محمد صلى الله عليه وسلم؟", a:"عبدالله بن عبدالمطلب"},
+      {q:"من هي أم الرسول محمد صلى الله عليه وسلم؟", a:"آمنة بنت وهب"},
+      {q:"ما اسم جد الرسول الذي كفله بعد وفاة والديه؟", a:"عبدالمطلب"},
+      {q:"من هو عم الرسول الذي كفله بعد وفاة جده وناصره؟", a:"أبو طالب"}
+    ],
+    300: [
+      {q:"من هو الصحابي الملقب بـ(سيف الله المسلول)؟", a:"خالد بن الوليد"},
+      {q:"من هو أول من أذّن في الإسلام؟", a:"بلال بن رباح رضي الله عنه"},
+      {q:"ما هي أول سورة نزلت في القرآن الكريم؟", a:"سورة العلق"},
+      {q:"كم عدد سور القرآن الكريم؟", a:"114 سورة"},
+      {q:"ما اسم أول مسجد بُني في الإسلام؟", a:"مسجد قباء"},
+      {q:"ما اسم الملك الذي يُنفخ في الصور يوم القيامة؟", a:"الملك إسرافيل عليه السلام"},
+      {q:"ما اسم الكتاب الذي أُنزل على النبي موسى عليه السلام؟", a:"التوراة"},
+      {q:"ما اسم غزوة الخندق التي حفر فيها المسلمون خندقًا حول المدينة؟", a:"غزوة الأحزاب (الخندق)"},
+      {q:"من هو الصحابي الذي اقترح حفر الخندق؟", a:"سلمان الفارسي"},
+      {q:"ما اسم الصلح الذي وقعه النبي مع قريش قبل فتح مكة؟", a:"صلح الحديبية"},
+      {q:"في أي سنة هجرية تم فتح مكة؟", a:"السنة الثامنة للهجرة"},
+      {q:"ما اسم حجة النبي الوحيدة التي أداها قبل وفاته؟", a:"حجة الوداع"},
+      {q:"من هو الصحابي الذي كان كاتب الوحي الأشهر؟", a:"زيد بن ثابت"},
+      {q:"ما اسم أول من استشهد في الإسلام (رجلًا)؟", a:"ياسر بن عامر"},
+      {q:"من هي أول شهيدة في الإسلام؟", a:"سمية بنت خياط"}
+    ],
+    400: [
+      {q:"في أي سنة هجرية فُرض صيام رمضان؟", a:"السنة الثانية للهجرة"},
+      {q:"ما اسم الغزوة التي وقعت في السنة الثانية للهجرة وانتصر فيها المسلمون رغم قلة عددهم؟", a:"غزوة بدر"},
+      {q:"ما هي السورة التي تعدل ثلث القرآن عند قراءتها بحسب الحديث الشريف؟", a:"سورة الإخلاص"},
+      {q:"في أي غزوة استُشهد سيدنا حمزة بن عبد المطلب؟", a:"غزوة أحد"},
+      {q:"من هي أول امرأة أسلمت؟", a:"السيدة خديجة بنت خويلد رضي الله عنها"},
+      {q:"ما اسم الرحلة الليلية التي انتقل فيها النبي من مكة إلى القدس ثم إلى السماء؟", a:"الإسراء والمعراج"},
+      {q:"من هو الصحابي الذي جُمع القرآن في مصحف واحد في عهده أول مرة؟", a:"أبو بكر الصديق"},
+      {q:"من هو الخليفة الراشد الذي استُشهد وهو يصلي الفجر؟", a:"عمر بن الخطاب"},
+      {q:"من هو الخليفة الراشد الرابع؟", a:"علي بن أبي طالب"},
+      {q:"ما اسم ابنة النبي التي تزوجها علي بن أبي طالب؟", a:"فاطمة الزهراء"},
+      {q:"من هو حفيد النبي الذي استُشهد في كربلاء؟", a:"الحسين بن علي"},
+      {q:"ما اسم أول غزوة قادها النبي بنفسه؟", a:"غزوة الأبواء (ودان)"},
+      {q:"من هو النبي الذي عاش أطول الأنبياء عمرًا بحسب القرآن؟", a:"النبي نوح عليه السلام"},
+      {q:"ما اسم السفينة التي نجا فيها النبي نوح ومن معه من الطوفان؟", a:"سفينة نوح"},
+      {q:"من هو النبي الذي أُلقي في النار فجعلها الله بردًا وسلامًا عليه؟", a:"النبي إبراهيم عليه السلام"}
+    ],
+    500: [
+      {q:"ما اسم السورة الوحيدة التي لا تبدأ بالبسملة؟", a:"سورة التوبة"},
+      {q:"كم عدد الأنبياء المذكورين بالاسم في القرآن الكريم؟", a:"25 نبيًا"},
+      {q:"من هو مؤلف كتاب (صحيح البخاري)؟", a:"الإمام محمد بن إسماعيل البخاري"},
+      {q:"ما اسم المعركة التي حسمت فتح بلاد فارس لصالح المسلمين؟", a:"معركة القادسية"},
+      {q:"من هو الخليفة الذي وحّد المصاحف على قراءة واحدة ونسخها للأمصار؟", a:"عثمان بن عفان"},
+      {q:"ما اسم أول معركة بحرية خاضها المسلمون؟", a:"معركة ذات الصواري"},
+      {q:"من هو مؤلف كتاب (صحيح مسلم)، ثاني أصح كتب الحديث؟", a:"الإمام مسلم بن الحجاج"},
+      {q:"ما اسم غزوة بني قريظة التي وقعت بعد غزوة الخندق مباشرة؟", a:"غزوة بني قريظة"},
+      {q:"من هو الصحابي الذي جمع أول مصحف بأمر أبي بكر بعد معركة اليمامة؟", a:"زيد بن ثابت"},
+      {q:"ما اسم المعركة التي قُتل فيها كثير من حفاظ القرآن فدفعت لجمعه؟", a:"معركة اليمامة"},
+      {q:"من هو الصحابي الذي أرسله النبي قاضيًا إلى اليمن؟", a:"معاذ بن جبل"},
+      {q:"ما اسم كتاب الإمام مالك في الحديث والفقه؟", a:"الموطأ"},
+      {q:"من هو مؤلف كتاب (سنن الترمذي)، أحد كتب الحديث الستة؟", a:"الإمام الترمذي"},
+      {q:"ما اسم أول دار للقرآن أو مدرسة تحفيظ أُنشئت في الإسلام؟", a:"دار الأرقم (أول دار للدعوة)"},
+      {q:"من هو الصحابي الملقب بـ(حواري رسول الله)؟", a:"الزبير بن العوام"}
+    ]
+  },
+  "تاريخ": {
+    100: [
+      {q:"من هو أول الخلفاء الراشدين؟", a:"أبو بكر الصديق"},
+      {q:"في أي قارة كانت الحضارة الفرعونية القديمة؟", a:"أفريقيا (مصر)"},
+      {q:"ما اسم السور الذي بناه الصينيون القدماء ويُعد من عجائب الدنيا؟", a:"سور الصين العظيم"},
+      {q:"من هو القائد الذي اكتشف قارة أمريكا عام 1492م؟", a:"كريستوفر كولومبوس"},
+      {q:"في أي عام انتهت الحرب العالمية الثانية؟", a:"1945"},
+      {q:"من هو مكتشف قارة أستراليا (أول أوروبي وصلها)؟", a:"جيمس كوك"},
+      {q:"ما اسم الملكة المصرية الشهيرة التي حكمت في العصر البطلمي؟", a:"كليوباترا"},
+      {q:"في أي قارة تقع دولة الصين؟", a:"آسيا"},
+      {q:"من هو أول رئيس للولايات المتحدة الأمريكية؟", a:"جورج واشنطن"},
+      {q:"ما اسم الجدار الذي كان يقسم مدينة برلين؟", a:"جدار برلين"},
+      {q:"من هو القائد الذي قاد الثورة العربية الكبرى؟", a:"الشريف حسين بن علي"},
+      {q:"في أي عام انتهت الحرب العالمية الأولى؟", a:"1918"},
+      {q:"ما اسم السفينة التي غرقت عام 1912 بعد اصطدامها بجبل جليدي؟", a:"تايتانيك"},
+      {q:"من هو القائد المسلم الذي فتح بلاد فارس بشكل كامل؟", a:"سعد بن أبي وقاص"},
+      {q:"في أي عام سقط جدار برلين؟", a:"1989"}
+    ],
+    200: [
+      {q:"في أي عام سقطت الأندلس (سقوط غرناطة)؟", a:"1492م"},
+      {q:"من هو مؤسس الدولة العثمانية؟", a:"عثمان بن أرطغرل"},
+      {q:"ما اسم الحضارة التي بنت الأهرامات في مصر؟", a:"الحضارة الفرعونية"},
+      {q:"من هو القائد الذي وحّد شبه الجزيرة العربية وأسس الدولة السعودية الثالثة؟", a:"الملك عبدالعزيز آل سعود"},
+      {q:"في أي عام بدأت الحرب العالمية الأولى؟", a:"1914"},
+      {q:"ما اسم أول جامعة في العالم لا تزال قائمة، تأسست بالمغرب؟", a:"جامعة القرويين"},
+      {q:"من هو الفرعون المصري الذي بنى أكبر الأهرامات (هرم خوفو)؟", a:"الملك خوفو"},
+      {q:"في أي عام اكتُشفت أمريكا على يد كولومبوس؟", a:"1492"},
+      {q:"من هو القائد الذي وحّد ألمانيا في القرن التاسع عشر؟", a:"أوتو فون بسمارك"},
+      {q:"ما اسم الثورة الاقتصادية التي بدأت في بريطانيا وغيّرت طرق الإنتاج؟", a:"الثورة الصناعية"},
+      {q:"من هي الملكة البريطانية التي حكمت أطول فترة قبل إليزابيث الثانية؟", a:"الملكة فيكتوريا"},
+      {q:"في أي عام استقلت الهند عن بريطانيا؟", a:"1947"},
+      {q:"من هو الخليفة الأموي الذي بنى قبة الصخرة في القدس؟", a:"عبد الملك بن مروان"},
+      {q:"ما اسم الحرب التي دارت بين إيران والعراق في الثمانينيات؟", a:"الحرب العراقية الإيرانية"},
+      {q:"في أي عام غزا العراق دولة الكويت؟", a:"1990"}
+    ],
+    300: [
+      {q:"من القائد الذي فتح مصر في عهد الخليفة عمر بن الخطاب؟", a:"عمرو بن العاص"},
+      {q:"ما اسم الإمبراطورية التي حكمت أجزاء واسعة من أوروبا وآسيا وأفريقيا وسقطت عام 1922؟", a:"الدولة العثمانية"},
+      {q:"من هو القائد المسلم الذي فتح الأندلس؟", a:"طارق بن زياد"},
+      {q:"في أي عام انتهت الحرب الباردة تقريبًا؟", a:"1991"},
+      {q:"ما اسم المعاهدة التي أنهت الحرب العالمية الأولى؟", a:"معاهدة فرساي"},
+      {q:"ما اسم المعركة التي هزم فيها المسلمون الروم وفتحوا الشام بشكل حاسم؟", a:"معركة اليرموك"},
+      {q:"من هو أول خليفة أموي؟", a:"معاوية بن أبي سفيان"},
+      {q:"ما اسم الثورة التي أطاحت بالقيصر الروسي عام 1917؟", a:"الثورة البلشفية (الروسية)"},
+      {q:"من هو القائد الذي فتح القسطنطينية عام 1453؟", a:"السلطان محمد الفاتح"},
+      {q:"في أي عام سقطت بغداد على يد المغول؟", a:"1258"},
+      {q:"ما اسم العاصمة التي اتخذها الأمويون لدولتهم؟", a:"دمشق"},
+      {q:"من هو القائد الذي قاد الفتح الإسلامي لبلاد السند؟", a:"محمد بن القاسم"},
+      {q:"في أي عام استقلت دولة الكويت رسميًا عن بريطانيا؟", a:"1961"},
+      {q:"من هو أول خليفة عباسي؟", a:"أبو العباس السفاح"},
+      {q:"ما اسم العاصمة التي اتخذها العباسيون لدولتهم؟", a:"بغداد"}
+    ],
+    400: [
+      {q:"ما اسم الحرب العالمية التي اندلعت عام 1939 وانتهت عام 1945؟", a:"الحرب العالمية الثانية"},
+      {q:"من هو القائد الذي هزم المغول في معركة عين جالوت؟", a:"سيف الدين قطز"},
+      {q:"في أي عام تم توحيد المملكة العربية السعودية تحت اسمها الحالي؟", a:"1932"},
+      {q:"ما اسم الثورة التي أطاحت بالنظام الملكي في فرنسا عام 1789؟", a:"الثورة الفرنسية"},
+      {q:"من هو القائد الذي حرّر بيت المقدس ولُقب بـ(صلاح الدين)؟", a:"صلاح الدين الأيوبي"},
+      {q:"من هو القائد الذي هزم نابليون بونابرت في معركة واترلو؟", a:"الدوق ويلينغتون"},
+      {q:"في أي عام أُلغي نظام الرق (العبودية) في الولايات المتحدة رسميًا؟", a:"1865"},
+      {q:"ما اسم الثورة التي أطاحت بالشاه في إيران عام 1979؟", a:"الثورة الإيرانية"},
+      {q:"من هو القائد الذي أسس الإمبراطورية المغولية؟", a:"جنكيز خان"},
+      {q:"من هو أول ملك موحّد لمصر القديمة؟", a:"الملك مينا (نارمر)"},
+      {q:"ما اسم المعاهدة التي قسّمت العالم الجديد بين إسبانيا والبرتغال؟", a:"معاهدة توردسيلاس (1494)"},
+      {q:"من هو القائد الذي قاد فتح صقلية للمسلمين؟", a:"أسد بن الفرات"},
+      {q:"ما اسم الوثيقة التي وقّعها الملك جون الإنجليزي عام 1215 وقيّدت سلطته؟", a:"ماغنا كارتا (العهد الأعظم)"},
+      {q:"من هو آخر سلاطين الدولة العثمانية؟", a:"السلطان محمد السادس"},
+      {q:"ما اسم المؤتمر الذي أعاد رسم خريطة أوروبا بعد هزيمة نابليون؟", a:"مؤتمر فيينا (1815)"}
+    ],
+    500: [
+      {q:"ما اسم المعاهدة التي أنهت حرب الثلاثين عامًا في أوروبا؟", a:"معاهدة وستفاليا (1648)"},
+      {q:"من هو الخليفة العباسي المرتبط بتأسيس بيت الحكمة وازدهار الترجمة؟", a:"هارون الرشيد"},
+      {q:"من هو القائد الذي وحّد اليابان في نهاية القرن السادس عشر؟", a:"تويوتومي هيديوشي"},
+      {q:"ما اسم أول معاهدة سلام موثقة في التاريخ (بين المصريين والحيثيين)؟", a:"معاهدة قادش"},
+      {q:"في أي عام تم توقيع اتفاقية سايكس بيكو لتقسيم النفوذ في الشرق الأوسط؟", a:"1916"},
+      {q:"ما اسم الوثيقة التي أصدرها البريطانيون عام 1917 ووعدوا فيها بإقامة وطن قومي لليهود بفلسطين؟", a:"وعد بلفور"},
+      {q:"من هو أول إمبراطور روماني اعتنق المسيحية؟", a:"الإمبراطور قسطنطين"},
+      {q:"ما اسم الأسرة الحاكمة التي أسست الدولة الفاطمية في مصر؟", a:"الأسرة الفاطمية"},
+      {q:"في أي عام تأسست منظمة الأمم المتحدة؟", a:"1945"},
+      {q:"من هو القائد الذي قاد الحملة الفرنسية على مصر عام 1798؟", a:"نابليون بونابرت"},
+      {q:"في أي عام سقطت القسطنطينية على يد العثمانيين؟", a:"1453م"},
+      {q:"من هو القائد المغولي الذي دمر بغداد عام 1258م؟", a:"هولاكو خان"},
+      {q:"ما اسم المعركة التي أوقفت الزحف الإسلامي في أوروبا الغربية عام 732م؟", a:"معركة بلاط الشهداء"},
+      {q:"في أي عام أُعلن قيام دولة إسرائيل؟", a:"1948"},
+      {q:"من هو القائد الذي قاد الجيوش الإسلامية في معركة نهاوند ضد الفرس؟", a:"النعمان بن مقرن"}
+    ]
+  },
+  "ثقافة عامة": {
+    100: [
+      {q:"ما هو أكبر محيط في العالم؟", a:"المحيط الهادئ"},
+      {q:"كم عدد أيام السنة الميلادية العادية؟", a:"365 يومًا"},
+      {q:"ما هو أسرع حيوان بري في العالم؟", a:"الفهد (الشيتا)"},
+      {q:"كم عدد ألوان قوس قزح؟", a:"سبعة ألوان"},
+      {q:"ما هو أكبر كوكب في المجموعة الشمسية؟", a:"كوكب المشتري"},
+      {q:"من مكتشف قانون الجاذبية؟", a:"إسحاق نيوتن"},
+      {q:"من هو مخترع المصباح الكهربائي؟", a:"توماس إديسون"}
+    ],
+    200: [
+      {q:"من مخترع الهاتف؟", a:"ألكسندر غراهام بيل"},
+      {q:"من العالم الذي وضع نظرية النسبية؟", a:"ألبرت أينشتاين"},
+      {q:"من مؤلف نظرية التطور؟", a:"تشارلز داروين"},
+      {q:"كم عدد قارات العالم؟", a:"سبع قارات"},
+      {q:"كم عدد عظام جسم الإنسان البالغ؟", a:"206 عظمة"},
+      {q:"ما هي أكبر دولة في العالم من حيث المساحة؟", a:"روسيا"},
+      {q:"ما اسم أكبر جزيرة في العالم؟", a:"جزيرة غرينلاند"}
+    ],
+    300: [
+      {q:"ما هي أطول سلسلة جبال في العالم؟", a:"جبال الأنديز"},
+      {q:"ما هو الحيوان الذي يُعد أكبر الثدييات البرية في العالم؟", a:"الفيل الأفريقي"},
+      {q:"ما اسم أعمق نقطة معروفة في المحيطات؟", a:"خندق ماريانا"},
+      {q:"ما هو العنصر الكيميائي الأكثر وفرة في الكون؟", a:"الهيدروجين"},
+      {q:"من مخترع أول طائرة تعمل بمحرك؟", a:"الأخوان رايت"},
+      {q:"من مخترع التلفاز؟", a:"جون لوجي بيرد"},
+      {q:"ما اسم الجسيم دون الذري المسؤول عن حمل الشحنة الكهربائية السالبة؟", a:"الإلكترون"}
+    ],
+    400: [
+      {q:"ما هو أخف عنصر كيميائي في الجدول الدوري؟", a:"الهيدروجين"},
+      {q:"من مخترع المطبعة بالحروف المتحركة؟", a:"يوهان غوتنبرغ"},
+      {q:"من مخترع الراديو؟", a:"غولييلمو ماركوني"},
+      {q:"من مخترع المحرك البخاري الذي أطلق الثورة الصناعية؟", a:"جيمس وات"},
+      {q:"من مؤلف رواية (مئة عام من العزلة)؟", a:"غابرييل غارسيا ماركيز"},
+      {q:"من هو العالم المسلم رائد علم البصريات ومؤلف (كتاب المناظر)؟", a:"ابن الهيثم"},
+      {q:"ما هو أطول نهر في قارة آسيا؟", a:"نهر اليانغتسي"}
+    ],
+    500: [
+      {q:"من مخترع القلم الحبر الجاف؟", a:"لازلو بيرو"},
+      {q:"من مخترع الكاميرا الفوتوغرافية الأولى؟", a:"جوزيف نيسفور نيبس"},
+      {q:"ما اسم أطول جسر معلق في العالم عند افتتاحه (تركيا)؟", a:"جسر تشاناكالي 1915"},
+      {q:"كم عدد فصوص الرئة اليمنى عند الإنسان؟", a:"ثلاثة فصوص"},
+      {q:"من هو العالم المرتبط باختراع الترانزستور في مختبرات بيل؟", a:"ويليام شوكلي"},
+      {q:"من هما مخترعا بروتوكول TCP/IP اللذان يُعدان من أهم مؤسسي الإنترنت الحديث؟", a:"فينت سيرف وبوب كان"},
+      {q:"من هي أول مبرمجة حاسوب في التاريخ؟", a:"أدا لوفليس"}
+    ]
+  },
+  "جغرافيا": {
+    100: [
+      {q:"ما هي عاصمة اليابان؟", a:"طوكيو"},
+      {q:"ما هو أطول نهر في العالم؟", a:"نهر النيل"},
+      {q:"في أي قارة تقع صحراء الساهارا؟", a:"أفريقيا"},
+      {q:"ما هي عاصمة المملكة العربية السعودية؟", a:"الرياض"},
+      {q:"ما هو أعلى جبل في العالم؟", a:"جبل إفرست"},
+      {q:"ما هي عاصمة فرنسا؟", a:"باريس"},
+      {q:"ما هي الدولة التي تُلقب بـ(بلاد الفراعنة)؟", a:"مصر"}
+    ],
+    200: [
+      {q:"ما هي أصغر دولة في العالم من حيث المساحة؟", a:"مدينة الفاتيكان"},
+      {q:"ما اسم البحر الذي يُعد الأكثر ملوحة في العالم؟", a:"البحر الميت"},
+      {q:"ما هي الدولة الوحيدة التي تقع في قارتين (آسيا وأوروبا)؟", a:"تركيا"},
+      {q:"ما هي الدولة التي كانت تُعرف سابقًا باسم (بلاد فارس)؟", a:"إيران"},
+      {q:"ما هي أكبر دولة عربية من حيث المساحة؟", a:"الجزائر"},
+      {q:"ما هو أطول نهر في قارة أمريكا الجنوبية؟", a:"نهر الأمازون"},
+      {q:"ما اسم النهر الذي يمر عبر مدينة بغداد؟", a:"نهر دجلة"}
+    ],
+    300: [
+      {q:"ما اسم أعلى جبل في قارة أفريقيا؟", a:"جبل كليمنجارو"},
+      {q:"في أي قارة تقع دولة الأرجنتين؟", a:"أمريكا الجنوبية"},
+      {q:"ما هي عاصمة أستراليا؟", a:"كانبرا"},
+      {q:"ما هي أصغر قارة من حيث المساحة؟", a:"أستراليا"},
+      {q:"ما هي الدولة التي تضم أعلى قمة جبلية في العالم (إفرست)؟", a:"نيبال (على حدود الصين)"},
+      {q:"ما اسم الخليج الذي يفصل شبه الجزيرة العربية عن إيران؟", a:"الخليج العربي"},
+      {q:"ما اسم المضيق الذي يفصل بين آسيا وأفريقيا عند مدخل البحر الأحمر؟", a:"مضيق باب المندب"}
+    ],
+    400: [
+      {q:"ما اسم أطول نهر في قارة أوروبا؟", a:"نهر الفولغا"},
+      {q:"ما اسم أكبر صحراء باردة في العالم؟", a:"صحراء أنتاركتيكا"},
+      {q:"ما اسم أكبر صحراء رملية حارة في العالم؟", a:"الصحراء الكبرى (أفريقيا)"},
+      {q:"ما هو ثاني أعلى جبل في العالم بعد إفرست؟", a:"جبل K2"},
+      {q:"ما هو أعلى جبل في قارة أوروبا؟", a:"جبل إلبروس"},
+      {q:"ما اسم أطول سلسلة جبال في أمريكا الشمالية؟", a:"جبال الروكي"},
+      {q:"ما اسم أطول سلسلة جبلية تحت الماء في العالم؟", a:"سلسلة وسط الأطلسي"}
+    ],
+    500: [
+      {q:"ما هو أطول نهر في أستراليا؟", a:"نهر موراي-دارلينغ"},
+      {q:"ما اسم أكبر بحيرة عذبة في العالم من حيث المساحة؟", a:"بحيرة سوبيريور"},
+      {q:"ما اسم أعمق بحيرة في العالم؟", a:"بحيرة بايكال"},
+      {q:"ما اسم أكبر شعاب مرجانية في العالم؟", a:"الحاجز المرجاني العظيم في أستراليا"},
+      {q:"ما هو ثالث أعلى جبل في العالم؟", a:"جبل كانشنجونغا"},
+      {q:"ما هو ثاني أطول نهر في قارة أفريقيا بعد النيل؟", a:"نهر الكونغو"},
+      {q:"ما اسم الخط الوهمي الذي يقسم الأرض إلى نصفين شمالي وجنوبي؟", a:"خط الاستواء"}
+    ]
+  },
+  "علوم": {
+    100: [
+      {q:"ما هو الغاز الذي يتنفسه الإنسان للبقاء على قيد الحياة؟", a:"الأكسجين"},
+      {q:"ما هو أقرب كوكب إلى الشمس؟", a:"عطارد"},
+      {q:"كم عدد حواس الإنسان الأساسية؟", a:"خمس حواس"},
+      {q:"ما هي حالة الماء عند تجمده؟", a:"الحالة الصلبة (جليد)"},
+      {q:"ما اسم العضو المسؤول عن ضخ الدم في جسم الإنسان؟", a:"القلب"},
+      {q:"ما هو الجهاز المسؤول عن التفكير في جسم الإنسان؟", a:"الدماغ"},
+      {q:"ما هو الكوكب الذي نعيش عليه؟", a:"الأرض"},
+      {q:"ما اسم الغاز الذي تحتاجه النار لتشتعل؟", a:"الأكسجين"},
+      {q:"ما هي حالة الماء عند الغليان؟", a:"بخار (حالة غازية)"},
+      {q:"كم عدد عيون الإنسان؟", a:"عينان"},
+      {q:"ما اسم العضو المسؤول عن الرؤية؟", a:"العين"},
+      {q:"ما هو أكبر عضو داخلي في جسم الإنسان؟", a:"الكبد"},
+      {q:"ما اسم النجم الذي يضيء الأرض نهارًا؟", a:"الشمس"},
+      {q:"كم عدد فصول السنة؟", a:"أربعة فصول"},
+      {q:"ما اسم أصغر وحدة في المادة تحتفظ بخصائصها الكيميائية؟", a:"الذرة"}
+    ],
+    200: [
+      {q:"ما هي وحدة قياس شدة التيار الكهربائي؟", a:"الأمبير"},
+      {q:"ما اسم العملية التي تحول بها النباتات ضوء الشمس إلى غذاء؟", a:"التمثيل الضوئي"},
+      {q:"ما هو الكوكب المعروف بـ(الكوكب الأحمر)؟", a:"المريخ"},
+      {q:"ما هو أصغر عدد أولي؟", a:"الرقم 2"},
+      {q:"ما اسم الغاز الذي تطلقه النباتات أثناء التمثيل الضوئي؟", a:"الأكسجين"},
+      {q:"ما اسم العملية التي يتحول فيها الماء إلى بخار؟", a:"التبخر"},
+      {q:"ما اسم الفيتامين الذي يُصنّع في الجلد عند التعرض للشمس؟", a:"فيتامين د"},
+      {q:"ما اسم الجهاز المسؤول عن ضخ الدم وتوزيعه بجسم الإنسان؟", a:"الجهاز الدوري"},
+      {q:"ما هو الغاز الذي يُشكل الجزء الأكبر من الهواء الجوي؟", a:"النيتروجين"},
+      {q:"ما اسم العملية التي تنقسم فيها نواة الذرة مطلقة طاقة هائلة؟", a:"الانشطار النووي"},
+      {q:"ما هو المعدن السائل في درجة حرارة الغرفة؟", a:"الزئبق"},
+      {q:"كم عدد أسنان الطفل اللبنية؟", a:"20 سنًا"},
+      {q:"ما اسم الغدة التي تفرز الأنسولين في جسم الإنسان؟", a:"البنكرياس"},
+      {q:"ما اسم الكوكب الذي يُلقب بـ(كوكب الأرض التوأم)؟", a:"الزهرة"},
+      {q:"ما اسم الطبقة الخارجية الصلبة التي تغطي سطح الأرض؟", a:"القشرة الأرضية"}
+    ],
+    300: [
+      {q:"كم عدد عظام الجمجمة تقريبًا عند الإنسان البالغ؟", a:"22 عظمة"},
+      {q:"ما اسم أصغر وحدة بناء في جسم الكائن الحي؟", a:"الخلية"},
+      {q:"ما هو العنصر الكيميائي الذي رمزه Fe؟", a:"الحديد"},
+      {q:"ما اسم القوة التي تجذب الأجسام نحو مركز الأرض؟", a:"الجاذبية"},
+      {q:"من هو العالم المسلم مؤلف كتاب (القانون في الطب)؟", a:"ابن سينا"},
+      {q:"من هو مكتشف الأشعة السينية؟", a:"فيلهلم رونتغن"},
+      {q:"ما هي وحدة قياس الطاقة في النظام الدولي؟", a:"الجول"},
+      {q:"من مكتشف الدورة الدموية الكبرى في جسم الإنسان؟", a:"ويليام هارفي"},
+      {q:"ما اسم العنصر المستخدم فعليًا في صناعة أقلام الرصاص رغم تسميتها الشائعة الخاطئة؟", a:"الكربون (الجرافيت)"},
+      {q:"ما هي وحدة قياس الضغط الجوي؟", a:"الباسكال"},
+      {q:"من هو مكتشف اللقاح ضد داء الكلب؟", a:"لويس باستور"},
+      {q:"ما اسم الغاز المسؤول عن ظاهرة الاحتباس الحراري بشكل رئيسي؟", a:"ثاني أكسيد الكربون"},
+      {q:"كم عدد حجرات القلب البشري؟", a:"أربع حجرات"},
+      {q:"من هو العالم الذي وضع الجدول الدوري للعناصر؟", a:"ديمتري مندليف"},
+      {q:"ما اسم الغاز النبيل المستخدم في تعبئة المناطيد بدلًا من الهيدروجين لأمانه؟", a:"الهيليوم"}
+    ],
+    400: [
+      {q:"من هو العالم المسلم الذي يُلقب بـ(أبو الجبر)؟", a:"الخوارزمي"},
+      {q:"ما هي وحدة قياس القوة في النظام الدولي؟", a:"نيوتن"},
+      {q:"ما اسم الطبقة الجوية التي تحمي الأرض من الأشعة فوق البنفسجية؟", a:"طبقة الأوزون"},
+      {q:"كم عدد الكروموسومات في الخلية البشرية العادية؟", a:"46 كروموسومًا"},
+      {q:"من هو مكتشف البنسلين؟", a:"ألكسندر فليمنغ"},
+      {q:"ما اسم النظرية التي وضعها ماكس بلانك وأسست ميكانيكا الكم؟", a:"نظرية الكم"},
+      {q:"ما اسم الجسيم دون الذري عديم الشحنة الموجود في نواة الذرة؟", a:"النيوترون"},
+      {q:"من هي العالمة التي اكتشفت عنصري الراديوم والبولونيوم؟", a:"ماري كوري"},
+      {q:"كم عدد لترات الدم تقريبًا في جسم الإنسان البالغ؟", a:"5 لترات تقريبًا"},
+      {q:"من هو مكتشف الكهرباء الساكنة عبر تجربة الطائرة الورقية؟", a:"بنجامين فرانكلين"},
+      {q:"ما اسم الوحدة المستخدمة لقياس شدة الصوت؟", a:"الديسيبل"},
+      {q:"من هو العالم الذي طور نظرية الانفجار العظيم رياضيًا لأول مرة؟", a:"جورج لوميتر"},
+      {q:"ما اسم الهرمون المسؤول عن تنظيم مستوى السكر في الدم؟", a:"الأنسولين"},
+      {q:"ما اسم النظرية التي تفسر بقاء الكائنات الأقدر على التكيف؟", a:"نظرية الانتخاب الطبيعي"},
+      {q:"كم عدد أسنان الإنسان البالغ الحكيمة (ضروس العقل) القصوى؟", a:"أربعة أضراس"}
+    ],
+    500: [
+      {q:"ما اسم العملية التي تحوّل بها الخلية الطاقة الغذائية إلى طاقة قابلة للاستخدام؟", a:"التنفس الخلوي"},
+      {q:"من هو مكتشف قانون الجاذبية حسب القصة المشهورة لسقوط التفاحة؟", a:"إسحاق نيوتن"},
+      {q:"ما اسم الجسيم الذي يحمل شحنة موجبة داخل نواة الذرة؟", a:"البروتون"},
+      {q:"من هو العالم المسلم الذي وصف الدورة الدموية الرئوية قبل هارفي بقرون؟", a:"ابن النفيس"},
+      {q:"ما اسم النظرية التي تفسر أصل الكون وتوسّعه من نقطة واحدة؟", a:"نظرية الانفجار العظيم"},
+      {q:"من هو العالم الذي وضع معادلة الطاقة الشهيرة E=mc²؟", a:"ألبرت أينشتاين"},
+      {q:"ما اسم الجسيم الذي يُفترض أنه يمنح الكتلة للجسيمات الأخرى، اكتُشف عام 2012؟", a:"بوزون هيغز"},
+      {q:"من هو مكتشف الخلية لأول مرة عبر المجهر؟", a:"روبرت هوك"},
+      {q:"من هي أول امرأة تفوز بجائزة نوبل في العلوم مرتين؟", a:"ماري كوري"},
+      {q:"ما اسم الظاهرة التي ينحني فيها الضوء حول جسم ضخم جدًا مثل ثقب أسود؟", a:"العدسة الجاذبية"},
+      {q:"من هو العالم المسلم الذي يُعد رائد علم الكيمياء وله كتاب (الخواص الكبير)؟", a:"جابر بن حيان"},
+      {q:"ما اسم أول عنصر كيميائي اكتُشف اصطناعيًا في مختبر؟", a:"التكنيشيوم"},
+      {q:"من هو مكتشف مبدأ الطفو (وزن الجسم في السائل)؟", a:"أرخميدس"},
+      {q:"ما اسم الجسيم المضاد للإلكترون في نظرية المادة المضادة؟", a:"البوزيترون"},
+      {q:"من هو العالم الذي يُعد رائد علم الجراحة في العصور الوسطى ومؤلف كتاب (التصريف لمن عجز عن التأليف)؟", a:"الزهراوي"}
+    ]
+  },
+  "أدب ولغة": {
+    100: [
+      {q:"كم عدد حروف اللغة العربية؟", a:"28 حرفًا"},
+      {q:"ما هو جمع كلمة (كتاب)؟", a:"كتب"},
+      {q:"ما اسم العلم الذي يهتم بضبط أواخر الكلمات في اللغة العربية؟", a:"النحو"},
+      {q:"ما هو ضد كلمة (كريم)؟", a:"بخيل"},
+      {q:"ما هو مرادف كلمة (سعيد)؟", a:"فرح أو مسرور"},
+      {q:"ما هو جمع كلمة (بيت)؟", a:"بيوت"},
+      {q:"ما هو ضد كلمة (طويل)؟", a:"قصير"},
+      {q:"كم عدد حركات الإعراب الأساسية في العربية؟", a:"أربع حركات"},
+      {q:"ما هو مرادف كلمة (جميل)؟", a:"حسن أو رائع"},
+      {q:"ما هو مؤنث كلمة (معلم)؟", a:"معلمة"},
+      {q:"ما اسم علامة الترقيم التي تُستخدم في نهاية الجملة الخبرية؟", a:"النقطة"},
+      {q:"ما هو جمع كلمة (ولد)؟", a:"أولاد"},
+      {q:"ما هو ضد كلمة (فرح)؟", a:"حزن"},
+      {q:"ما هو مرادف كلمة (شجاع)؟", a:"جريء"},
+      {q:"ما هو جمع كلمة (شهر)؟", a:"أشهر أو شهور"}
+    ],
+    200: [
+      {q:"من صاحب المعلقة المشهورة التي مطلعها (قفا نبك)؟", a:"امرؤ القيس"},
+      {q:"ما هو جمع كلمة (طبيب)؟", a:"أطباء"},
+      {q:"من هو مؤلف كتاب (البخلاء)؟", a:"الجاحظ"},
+      {q:"من هي الراوية التي تحكي الحكايات في قصص (ألف ليلة وليلة)؟", a:"شهرزاد"},
+      {q:"ما هو مؤنث كلمة (أسد)؟", a:"لبؤة"},
+      {q:"ما اسم بحر الشعر الذي يُعد من أكثر بحور الشعر العربي استخدامًا؟", a:"البحر الطويل"},
+      {q:"من مؤلف رواية (الحرب والسلام)؟", a:"ليو تولستوي"},
+      {q:"ما هو جمع كلمة (رجل)؟", a:"رجال"},
+      {q:"من هو الشاعر العباسي الشهير الملقب بـ(شاعر الحكمة)؟", a:"أبو الطيب المتنبي"},
+      {q:"ما هو مؤنث كلمة (حصان)؟", a:"فرس"},
+      {q:"من مؤلف مسرحية (هاملت)؟", a:"ويليام شكسبير"},
+      {q:"ما اسم العلم الذي يهتم بدراسة معاني الكلمات؟", a:"علم الدلالة"},
+      {q:"ما هو جمع كلمة (يد)؟", a:"أيدٍ أو أيادٍ"},
+      {q:"من مؤلف رواية (البؤساء)؟", a:"فيكتور هوغو"},
+      {q:"من مؤلف رواية (ذهب مع الريح)؟", a:"مارغريت ميتشل"}
+    ],
+    300: [
+      {q:"من هو الشاعر الملقب بـ(أمير الشعراء)؟", a:"أحمد شوقي"},
+      {q:"من مؤلف كتاب (العين) وهو أول معجم عربي مرتب حسب مخارج الحروف؟", a:"الخليل بن أحمد الفراهيدي"},
+      {q:"من مؤلف رواية (الأيام)؟", a:"طه حسين"},
+      {q:"ما هو جمع كلمة (قلم)؟", a:"أقلام"},
+      {q:"من هو الشاعر الملقب بـ(شاعر النيل)؟", a:"حافظ إبراهيم"},
+      {q:"من هو الشاعر العباسي الملقب بـ(أبو نواس) واشتهر بشعر الخمريات؟", a:"الحسن بن هانئ"},
+      {q:"من مؤلف كتاب (دلائل الإعجاز) في علم البلاغة؟", a:"عبد القاهر الجرجاني"},
+      {q:"ما اسم أول رواية عربية حديثة معروفة (زينب)؟", a:"محمد حسين هيكل"},
+      {q:"من هو الأديب الروسي مؤلف رواية (الجريمة والعقاب)؟", a:"فيودور دوستويفسكي"},
+      {q:"ما هو جمع كلمة (عين)؟", a:"أعين أو عيون"},
+      {q:"من هو شاعر النبي محمد صلى الله عليه وسلم الأشهر؟", a:"حسان بن ثابت"},
+      {q:"ما اسم المدرسة الأدبية التي تُعنى بالتعبير عن المشاعر الذاتية بحرية؟", a:"المدرسة الرومانسية"},
+      {q:"من مؤلف رواية (مزرعة الحيوان)؟", a:"جورج أورويل"},
+      {q:"من هو الأديب المصري الملقب بـ(عميد الأدب العربي)؟", a:"طه حسين"},
+      {q:"ما هو جمع كلمة (نجم)؟", a:"نجوم"}
+    ],
+    400: [
+      {q:"من مؤلف رواية (زقاق المدق)؟", a:"نجيب محفوظ"},
+      {q:"من هو أول عربي يفوز بجائزة نوبل في الأدب؟", a:"نجيب محفوظ"},
+      {q:"ما اسم علم اللغة الذي يدرس أصوات الحروف ومخارجها؟", a:"علم الأصوات"},
+      {q:"من هي الشاعرة العربية الملقبة بـ(الخنساء)؟", a:"تماضر بنت عمرو"},
+      {q:"ما هو المصدر الأساسي الأول من مصادر اللغة العربية الفصحى؟", a:"القرآن الكريم"},
+      {q:"من هو الشاعر العربي الملقب بـ(شاعر القطرين) لبنان ومصر؟", a:"خليل مطران"},
+      {q:"ما اسم الوزن الشعري الذي لا يلتزم بالقافية الموحدة؟", a:"الشعر الحر"},
+      {q:"من مؤلف رواية (الأمير) في الفكر السياسي؟", a:"نيكولو مكيافيلي"},
+      {q:"ما هو جمع كلمة (كأس)؟", a:"كؤوس"},
+      {q:"ما هو الاسم الحقيقي للشاعر السوري المعروف باسم (أدونيس)؟", a:"علي أحمد سعيد إسبر"},
+      {q:"من مؤلف ملحمة (الإلياذة)؟", a:"هوميروس"},
+      {q:"من مؤلف رواية (رجال في الشمس)؟", a:"غسان كنفاني"},
+      {q:"من هو أول شاعر عربي استخدم قصيدة التفعيلة الحديثة؟", a:"بدر شاكر السياب"},
+      {q:"ما هو جمع كلمة (قصة)؟", a:"قصص"},
+      {q:"من هو الأديب الفرنسي مؤلف رواية (الغريب)؟", a:"ألبير كامو"}
+    ],
+    500: [
+      {q:"من هو صاحب كتاب (المقدمة) الشهير في علم الاجتماع والتاريخ؟", a:"عبد الرحمن بن خلدون"},
+      {q:"من هو مؤلف كتاب (الأغاني)؟", a:"أبو الفرج الأصفهاني"},
+      {q:"ما اسم أشهر معاجم اللغة العربية المرتب حسب الحروف الأخيرة للكلمة؟", a:"لسان العرب"},
+      {q:"من هو الشاعر الجاهلي الملقب بـ(الملك الضليل)؟", a:"امرؤ القيس"},
+      {q:"من هو مترجم كتاب (كليلة ودمنة) إلى العربية؟", a:"عبد الله بن المقفع"},
+      {q:"من هو مؤلف كتاب (البيان والتبيين)؟", a:"الجاحظ"},
+      {q:"ما اسم أقدم نص أدبي مكتوب معروف في التاريخ؟", a:"ملحمة جلجامش"},
+      {q:"من هو النحوي الذي وضع أول قواعد النحو العربي المدونة؟", a:"أبو الأسود الدؤلي"},
+      {q:"ما اسم علم البلاغة الذي يهتم بالمحسنات اللفظية والمعنوية؟", a:"علم البديع"},
+      {q:"من هو الشاعر الأندلسي صاحب قصيدة (نونية) الشهيرة في الغزل؟", a:"ابن زيدون"},
+      {q:"من مؤلف كتاب (طوق الحمامة) في الحب والعشق؟", a:"ابن حزم الأندلسي"},
+      {q:"ما اسم أول معجم عربي مرتب أبجديًا حسب أوائل الحروف؟", a:"الصحاح للجوهري"},
+      {q:"من هو الشاعر الذي أنشد قصيدة (بانت سعاد) أمام النبي فخلع عليه بردته؟", a:"كعب بن زهير"},
+      {q:"ما اسم المدرسة النحوية المنافسة لمدرسة البصرة في علم النحو؟", a:"مدرسة الكوفة"},
+      {q:"من هو مؤلف كتاب (الفهرست) الذي وثّق فيه أسماء الكتب والمؤلفين قديمًا؟", a:"ابن النديم"}
+    ]
+  },
+  "سينما وفن": {
+    100: [
+      {q:"ما هو اللون الناتج عن مزج اللونين الأزرق والأصفر؟", a:"الأخضر"},
+      {q:"ما اسم الآلة الموسيقية ذات المفاتيح البيضاء والسوداء؟", a:"البيانو"},
+      {q:"ما اسم أشهر جائزة سينمائية عالمية تُمنح سنويًا في هوليوود؟", a:"جائزة الأوسكار"},
+      {q:"ما اسم الآلة الوترية المعروفة في الموسيقى العربية؟", a:"العود"},
+      {q:"ما اسم الفن الذي يعتمد على تشكيل الطين أو الحجر لصنع مجسمات؟", a:"النحت"},
+      {q:"ما اسم الآلة الموسيقية ذات الأوتار الأربعة تُعزف بالقوس؟", a:"الكمان"},
+      {q:"ما اسم أشهر شخصية كرتونية تنتجها شركة ديزني وهي فأر؟", a:"ميكي ماوس"},
+      {q:"من هو المطرب الملقب بـ(ملك البوب) عالميًا؟", a:"مايكل جاكسون"},
+      {q:"ما اسم الآلة الموسيقية الإيقاعية المصنوعة من الجلد تُقرع باليد؟", a:"الطبلة"},
+      {q:"ما اسم اللون الذي ينتج من مزج الأحمر والأزرق؟", a:"البنفسجي"},
+      {q:"ما اسم الفن الذي يعتمد على التقاط الصور بالكاميرا؟", a:"التصوير الفوتوغرافي"},
+      {q:"من المغني الملقب بـ(ملك الروك أند رول)؟", a:"إلفيس بريسلي"},
+      {q:"ما اسم الآلة الموسيقية النفخية المعدنية المستقيمة الشكل؟", a:"الترومبيت"},
+      {q:"ما اسم فيلم ديزني الذي يحكي قصة أسد صغير يصبح ملكًا؟", a:"الأسد الملك"},
+      {q:"ما اسم فيلم ديزني الذي يحكي قصة أميرة تتجمد مملكتها؟", a:"فروزن"}
+    ],
+    200: [
+      {q:"ما اسم فن تحريك الرسومات لخلق حركة، ويُعرف اختصارًا؟", a:"الأنيميشن (الرسوم المتحركة)"},
+      {q:"من هي المطربة الملقبة بـ(كوكب الشرق)؟", a:"أم كلثوم"},
+      {q:"ما اسم المتحف الفرنسي الشهير الذي يضم لوحة (الموناليزا)؟", a:"متحف اللوفر"},
+      {q:"من رسم لوحة (الموناليزا)؟", a:"ليوناردو دافنشي"},
+      {q:"ما اسم الفن الذي يجمع الموسيقى والغناء والتمثيل على المسرح؟", a:"الأوبرا"},
+      {q:"من هو المخرج المصري صاحب فيلم (المصير) و(الأرض)؟", a:"يوسف شاهين"},
+      {q:"ما اسم أشهر مسلسل كرتوني ياباني عن فتى يريد أن يصبح ملك القراصنة؟", a:"ون بيس (One Piece)"},
+      {q:"ما اسم الآلة الموسيقية اليابانية التقليدية ذات الأوتار تُشبه القيثارة؟", a:"الكوتو"},
+      {q:"من هو مخرج سلسلة أفلام (هاري بوتر) الأولى؟", a:"كريس كولومبوس"},
+      {q:"ما اسم استوديو الرسوم المتحركة الياباني الشهير الذي أنتج (المدينة الساحرة)؟", a:"استوديو غيبلي"},
+      {q:"من هو الملحن النمساوي الشهير مؤلف (السيمفونية الأربعين)؟", a:"فولفغانغ أماديوس موتسارت"},
+      {q:"ما اسم فيلم الرسوم المتحركة الذي يحكي قصة سمكة صغيرة تبحث عن ابنها؟", a:"البحث عن نيمو"},
+      {q:"من هو الرسام الإيطالي صاحب لوحة (العشاء الأخير)؟", a:"ليوناردو دافنشي"},
+      {q:"ما اسم أشهر مسرح أوبرا في إيطاليا؟", a:"مسرح لا سكالا في ميلانو"},
+      {q:"ما اسم أول شركة إنتاج أسستها عائلة والت ديزني؟", a:"شركة ديزني (Walt Disney)"}
+    ],
+    300: [
+      {q:"من هو الفنان الهولندي صاحب لوحة (ليلة النجوم)؟", a:"فنسنت فان جوخ"},
+      {q:"من هو الموسيقار الذي ألّف السيمفونية التاسعة رغم فقدانه للسمع بالكامل؟", a:"لودفيغ فان بيتهوفن"},
+      {q:"ما اسم أول فيلم كرتوني طويل أنتجته شركة ديزني؟", a:"سنو وايت والأقزام السبعة"},
+      {q:"ما اسم أشهر مهرجان سينمائي يقام في فرنسا سنويًا؟", a:"مهرجان كان السينمائي"},
+      {q:"من هو المخرج الملقب بـ(عبقري الرعب) وأخرج فيلم Psycho؟", a:"ألفريد هيتشكوك"},
+      {q:"من هو مخرج فيلم (العراب)؟", a:"فرانسيس فورد كوبولا"},
+      {q:"من هو الرسام الفرنسي رائد المدرسة الانطباعية وصاحب لوحات (زنابق الماء)؟", a:"كلود مونيه"},
+      {q:"ما اسم الملحن الألماني الشهير الذي ألّف أوبرا (حلقة النيبلونغ)؟", a:"ريتشارد فاغنر"},
+      {q:"من هو مخرج سلسلة أفلام (حرب النجوم)؟", a:"جورج لوكاس"},
+      {q:"ما اسم النحات الإيطالي عصر النهضة صاحب تمثال (بييتا)؟", a:"مايكل أنجلو"},
+      {q:"ما اسم دار الأوبرا الشهيرة في مدينة سيدني الأسترالية؟", a:"دار أوبرا سيدني"},
+      {q:"ما اسم الفنان الإسباني صاحب أسلوب السريالية ولوحة (ثبات الذاكرة) بالساعات الذائبة؟", a:"سلفادور دالي"},
+      {q:"من هو مخرج فيلم (تايتانيك) و(أفاتار)؟", a:"جيمس كاميرون"},
+      {q:"ما اسم أول أوبرا ألّفها فيردي بمناسبة افتتاح قناة السويس؟", a:"أوبرا عايدة"},
+      {q:"من هو الرسام الهولندي الذي قطع أذنه واشتهر بلوحاته بعد وفاته؟", a:"فنسنت فان جوخ"}
+    ],
+    400: [
+      {q:"ما اسم التمثال الشهير الذي نحته مايكل أنجلو ويصور النبي داود؟", a:"تمثال داود"},
+      {q:"من هو الرسام صاحب لوحة (الصرخة) الشهيرة؟", a:"إدفارد مونك"},
+      {q:"من هو الملحن المصري الملقب بـ(موسيقار الأجيال)؟", a:"محمد عبد الوهاب"},
+      {q:"ما اسم الطراز المعماري المعروف بقبابه وزخارفه الهندسية المرتبط بالحضارة الإسلامية؟", a:"الطراز المعماري الإسلامي"},
+      {q:"من هو الرسام الإسباني رائد الحركة التكعيبية وصاحب لوحة (غرنيكا)؟", a:"بابلو بيكاسو"},
+      {q:"من هو الملحن العالمي الذي ألّف الموسيقى التصويرية لأفلام (حرب النجوم) و(إنديانا جونز)؟", a:"جون ويليامز"},
+      {q:"ما اسم المخرج الياباني رائد أفلام الرسوم المتحركة الفنية ومؤسس استوديو غيبلي؟", a:"هاياو ميازاكي"},
+      {q:"من هي الفنانة التشكيلية المكسيكية الشهيرة برسم صور شخصية معبرة عن آلامها؟", a:"فريدا كاهلو"},
+      {q:"ما اسم الفنان الذي طوّر أسلوب البوب آرت وصوّر علب حساء كامبل؟", a:"آندي وارهول"},
+      {q:"من هو الموسيقار الألماني الذي يُعد أحد أعظم مؤلفي الموسيقى الكلاسيكية؟", a:"يوهان سيباستيان باخ"},
+      {q:"ما اسم دار الأوبرا الفرنسية الشهيرة التي ألهمت رواية (شبح الأوبرا)؟", a:"أوبرا باريس"},
+      {q:"ما اسم أشهر جائزة موسيقية أمريكية تُمنح سنويًا؟", a:"جائزة غرامي"},
+      {q:"من هو الممثل والمخرج البريطاني الذي اشتهر بشخصية (المتشرد الصامت) في السينما الصامتة؟", a:"تشارلي تشابلن"},
+      {q:"ما اسم أول فيلم رسوم متحركة بالكمبيوتر بالكامل أنتجته بيكسار؟", a:"حكاية لعبة (Toy Story)"},
+      {q:"من هو الرسام الإسباني الذي رسم لوحة (آنسات أفينيون) المؤسسة للتكعيبية؟", a:"بابلو بيكاسو"}
+    ],
+    500: [
+      {q:"من هو مخرج فيلم (المومياء) المصري الشهير عام 1969؟", a:"شادي عبد السلام"},
+      {q:"ما اسم أول فيلم ناطق في تاريخ السينما؟", a:"مغني الجاز (The Jazz Singer)"},
+      {q:"ما اسم أقدم مهرجان سينمائي في العالم لا يزال يقام حتى اليوم؟", a:"مهرجان البندقية السينمائي"},
+      {q:"من هو مصمم تمثال الحرية في نيويورك؟", a:"فريدريك أوغست بارتولدي"},
+      {q:"ما اسم أول فيلم مصري طويل تم إنتاجه؟", a:"فيلم (ليلى) عام 1927"},
+      {q:"من هو الملحن الإيطالي الذي ألّف الموسيقى التصويرية لأفلام سيرجيو ليوني الغربية؟", a:"إينيو موريكونى"},
+      {q:"ما اسم الحركة الفنية التي أسسها بيكاسو وبراك وتعتمد على تفكيك الأشكال هندسيًا؟", a:"التكعيبية"},
+      {q:"من هو النحات الفرنسي صاحب تمثال (المفكر)؟", a:"أوغست رودان"},
+      {q:"ما اسم أول فيلم فاز بجائزة الأوسكار لأفضل فيلم في تاريخ الجوائز عام 1929؟", a:"فيلم Wings"},
+      {q:"من هو الرسام الفلمنكي صاحب لوحة (الفتاة ذات القرط اللؤلؤي)؟", a:"يوهانس فيرمير"},
+      {q:"ما اسم الملحن الروسي صاحب باليه (كسارة البندق)؟", a:"بيوتر تشايكوفسكي"},
+      {q:"من هو المخرج السويدي الذي يُعد أحد أعظم مخرجي السينما الفنية العالمية؟", a:"إنغمار برغمان"},
+      {q:"ما اسم أول فيلم ملون بالكامل أنتجته هوليوود بنجاح تجاري كبير؟", a:"ذهب مع الريح"},
+      {q:"من هو الملحن النمساوي الملقب بـ(ملك الفالس)؟", a:"يوهان شتراوس الابن"},
+      {q:"ما اسم المتحف الإسباني الشهير الذي يضم لوحة (غرنيكا) لبيكاسو؟", a:"متحف رينا صوفيا"}
+    ]
+  },
+  "أعلام": {
+    100: [
+      {a:"المملكة العربية السعودية", flagEmoji:"🇸🇦"},
+      {a:"الولايات المتحدة الأمريكية", flagEmoji:"🇺🇸"},
+      {a:"المملكة المتحدة (بريطانيا)", flagEmoji:"🇬🇧"},
+      {a:"فرنسا", flagEmoji:"🇫🇷"},
+      {a:"اليابان", flagEmoji:"🇯🇵"},
+      {a:"الإمارات العربية المتحدة", flagEmoji:"🇦🇪"},
+      {a:"الصين", flagEmoji:"🇨🇳"},
+      {a:"الهند", flagEmoji:"🇮🇳"},
+      {a:"روسيا", flagEmoji:"🇷🇺"},
+      {a:"أستراليا", flagEmoji:"🇦🇺"},
+      {a:"سويسرا", flagEmoji:"🇨🇭"},
+      {a:"باكستان", flagEmoji:"🇵🇰"},
+      {a:"قطر", flagEmoji:"🇶🇦"},
+      {a:"البحرين", flagEmoji:"🇧🇭"},
+      {a:"عُمان", flagEmoji:"🇴🇲"}
+    ],
+    200: [
+      {a:"الكويت", flagEmoji:"🇰🇼"},
+      {a:"مصر", flagEmoji:"🇪🇬"},
+      {a:"البرازيل", flagEmoji:"🇧🇷"},
+      {a:"ألمانيا", flagEmoji:"🇩🇪"},
+      {a:"تركيا", flagEmoji:"🇹🇷"},
+      {a:"الأردن", flagEmoji:"🇯🇴"},
+      {a:"لبنان", flagEmoji:"🇱🇧"},
+      {a:"سوريا", flagEmoji:"🇸🇾"},
+      {a:"العراق", flagEmoji:"🇮🇶"},
+      {a:"المغرب", flagEmoji:"🇲🇦"},
+      {a:"تونس", flagEmoji:"🇹🇳"},
+      {a:"الجزائر", flagEmoji:"🇩🇿"},
+      {a:"اليمن", flagEmoji:"🇾🇪"},
+      {a:"السودان", flagEmoji:"🇸🇩"},
+      {a:"ليبيا", flagEmoji:"🇱🇾"}
+    ],
+    300: [
+      {a:"إيطاليا", flagEmoji:"🇮🇹"},
+      {a:"إسبانيا", flagEmoji:"🇪🇸"},
+      {a:"الأرجنتين", flagEmoji:"🇦🇷"},
+      {a:"كوريا الجنوبية", flagEmoji:"🇰🇷"},
+      {a:"كندا", flagEmoji:"🇨🇦"},
+      {a:"البرتغال", flagEmoji:"🇵🇹"},
+      {a:"اليونان", flagEmoji:"🇬🇷"},
+      {a:"بولندا", flagEmoji:"🇵🇱"},
+      {a:"بلجيكا", flagEmoji:"🇧🇪"},
+      {a:"النمسا", flagEmoji:"🇦🇹"},
+      {a:"الدنمارك", flagEmoji:"🇩🇰"},
+      {a:"النرويج", flagEmoji:"🇳🇴"},
+      {a:"فنلندا", flagEmoji:"🇫🇮"},
+      {a:"أيرلندا", flagEmoji:"🇮🇪"},
+      {a:"نيوزيلندا", flagEmoji:"🇳🇿"}
+    ],
+    400: [
+      {a:"السويد", flagEmoji:"🇸🇪"},
+      {a:"هولندا", flagEmoji:"🇳🇱"},
+      {a:"المكسيك", flagEmoji:"🇲🇽"},
+      {a:"نيجيريا", flagEmoji:"🇳🇬"},
+      {a:"إندونيسيا", flagEmoji:"🇮🇩"},
+      {a:"تايلاند", flagEmoji:"🇹🇭"},
+      {a:"فيتنام", flagEmoji:"🇻🇳"},
+      {a:"الفلبين", flagEmoji:"🇵🇭"},
+      {a:"ماليزيا", flagEmoji:"🇲🇾"},
+      {a:"تشيلي", flagEmoji:"🇨🇱"},
+      {a:"بيرو", flagEmoji:"🇵🇪"},
+      {a:"كولومبيا", flagEmoji:"🇨🇴"},
+      {a:"فنزويلا", flagEmoji:"🇻🇪"},
+      {a:"كوبا", flagEmoji:"🇨🇺"},
+      {a:"جامايكا", flagEmoji:"🇯🇲"}
+    ],
+    500: [
+      {a:"كازاخستان", flagEmoji:"🇰🇿"},
+      {a:"الأوروغواي", flagEmoji:"🇺🇾"},
+      {a:"كينيا", flagEmoji:"🇰🇪"},
+      {a:"بوتان", flagEmoji:"🇧🇹"},
+      {a:"سلوفينيا", flagEmoji:"🇸🇮"},
+      {a:"منغوليا", flagEmoji:"🇲🇳"},
+      {a:"نيبال", flagEmoji:"🇳🇵"},
+      {a:"سريلانكا", flagEmoji:"🇱🇰"},
+      {a:"ميانمار", flagEmoji:"🇲🇲"},
+      {a:"إثيوبيا", flagEmoji:"🇪🇹"},
+      {a:"غانا", flagEmoji:"🇬🇭"},
+      {a:"السنغال", flagEmoji:"🇸🇳"},
+      {a:"آيسلندا", flagEmoji:"🇮🇸"},
+      {a:"لوكسمبورغ", flagEmoji:"🇱🇺"},
+      {a:"مالطا", flagEmoji:"🇲🇹"}
+    ]
+  },
+  "معالم الكويت": {
+    100: [
+      {a:"أبراج الكويت", clue:"الرمز الأشهر للكويت، ثلاثة أبراج بجانب البحر يعرفها الجميع", icon:"🗼"},
+      {a:"المسجد الكبير", clue:"أكبر مسجد في الكويت ومن أكبر المساجد في العالم", icon:"🕌"},
+      {a:"مجمع الأفنيوز", clue:"أكبر مجمع تجاري في الكويت ويضم مئات المحلات والمطاعم", icon:"🛍️"},
+      {a:"مطار الكويت الدولي", clue:"البوابة الجوية الرئيسية للبلاد، يستقبل ملايين المسافرين سنويًا", icon:"✈️"},
+      {a:"مجلس الأمة", clue:"المكان الذي يجتمع فيه أعضاء البرلمان لمناقشة القوانين", icon:"🏛️"},
+      {a:"الدينار الكويتي", clue:"العملة الرسمية لدولة الكويت", icon:"💰"},
+      {a:"برج التحرير", clue:"برج شاهق بُني للاحتفال بتحرير الكويت عام 1991", icon:"🗽"}
+    ],
+    200: [
+      {a:"سوق المباركية", clue:"سوق تراثي قديم وسط العاصمة يبيع التوابل والذهب والتحف", icon:"🛒"},
+      {a:"مجمع مارينا مول", clue:"مجمع تجاري وترفيهي على الواجهة البحرية قرب برج التحرير", icon:"🏬"},
+      {a:"قصر السيف", clue:"المقر الرسمي لسمو الأمير ومكان استقبال كبار الضيوف", icon:"🏰"},
+      {a:"جزيرة فيلكا", clue:"جزيرة تاريخية قبالة ساحل الكويت فيها آثار قديمة", icon:"🏝️"},
+      {a:"مجمع 360 مول", clue:"مجمع تجاري وترفيهي حديث يحمل في اسمه رقمًا يشير لدرجات الدائرة الكاملة", icon:"🛍️"},
+      {a:"مجمع الكوت", clue:"مجمع تجاري في منطقة السالمية اسمه يعني (الكوخ الصغير)", icon:"🛍️"},
+      {a:"جسر الشيخ جابر الأحمد", clue:"جسر بحري طويل يربط مدينة الكويت بمنطقة الصبية ويُعد من أطول الجسور البحرية في المنطقة", icon:"🌉"}
+    ],
+    300: [
+      {a:"استاد جابر الأحمد الدولي", clue:"استاد رياضي كبير يستضيف المباريات الكبرى في البلاد", icon:"🏟️"},
+      {a:"المتحف الوطني الكويتي", clue:"متحف يعرض تاريخ الكويت وتراثها وآثارها القديمة", icon:"🖼️"},
+      {a:"منطقة الخيران", clue:"منطقة ساحلية سكنية وسياحية جنوب الكويت تشتهر بالشاليهات", icon:"🌊"},
+      {a:"سوق شرق", clue:"سوق تجاري على الواجهة البحرية باسم يعني (الشرق)", icon:"🛍️"},
+      {a:"الجزيرة الخضراء", clue:"جزيرة اصطناعية خضراء قرب الكورنيش يزورها الأهالي للتنزه", icon:"🏝️"},
+      {a:"مركز الشيخ جابر الأحمد الثقافي", clue:"مركز ثقافي كبير يحمل اسم أمير راحل ويضم مسارح ومكتبة", icon:"🎭"},
+      {a:"برج الحمراء", clue:"برج سكني وتجاري شاهق يُعد من أطول الأبراج في الكويت", icon:"🏙️"}
+    ],
+    400: [
+      {a:"مدينة جابر الأحمد", clue:"منطقة سكنية وتجارية حديثة تحمل اسم أمير راحل", icon:"🏙️"},
+      {a:"ساحة الصفاة", clue:"ساحة تاريخية وسط العاصمة كانت سوقًا مركزيًا للتجار قديمًا", icon:"⛲"},
+      {a:"بيت السدو", clue:"بيت تراثي يُعنى بالحرف اليدوية النسائية التقليدية مثل النسيج البدوي", icon:"🧶"},
+      {a:"قصر خزعل", clue:"قصر تاريخي في منطقة شرق يعود لأحد حكام المنطقة القدامى", icon:"🏰"},
+      {a:"المدرسة المباركية", clue:"أول مدرسة نظامية في الكويت افتُتحت أوائل القرن العشرين", icon:"🏫"},
+      {a:"مكتبة الكويت الوطنية", clue:"المكتبة الرسمية التي تحفظ إصدارات ومخطوطات الكويت", icon:"📚"},
+      {a:"بيت ديكسون", clue:"بيت تاريخي كان مقرًا لمعتمد بريطاني في الكويت أوائل القرن الماضي", icon:"🏛️"}
+    ],
+    500: [
+      {a:"بوابة الجهراء", clue:"إحدى بوابات سور الكويت القديم الباقية، تحمل اسم منطقة شمال غرب المدينة", icon:"🚪"},
+      {a:"متحف طارق رجب", clue:"متحف يعرض مقتنيات تراثية وإسلامية نادرة جمعها هاوٍ كويتي شهير", icon:"🏺"},
+      {a:"جزيرة بوبيان", clue:"أكبر جزيرة كويتية من حيث المساحة، غير مأهولة بشكل دائم", icon:"🏝️"},
+      {a:"جزيرة قاروه", clue:"جزيرة كويتية صغيرة تُعد محمية طبيعية للطيور والحياة البرية", icon:"🐢"},
+      {a:"تل سعد (حضارة دلمون)", clue:"تل أثري في جزيرة فيلكا يعود لحضارة قديمة ازدهرت في الخليج قبل آلاف السنين", icon:"🏛️"},
+      {a:"القلعة الهلنستية", clue:"بقايا حصن قديم شُيّد في جزيرة فيلكا خلال العصر الهلنستي اليوناني", icon:"🏛️"},
+      {a:"برج الحمراء", clue:"أعلى برج في الكويت من حيث الارتفاع", icon:"🏙️"}
+    ]
+  },
+  "من هو المطرب": {
+    100: [
+      {q:"من غنى أغنية (دنيا الوله)؟", a:"عبدالله الرويشد", youtubeQuery:"دنيا الوله عبدالله الرويشد"},
+      {q:"من غنى أغنية (لا تلومونه)؟", a:"عبدالله الرويشد", youtubeQuery:"لا تلومونه عبدالله الرويشد"},
+      {q:"من غنى أغنية (يا ليل ما أطولك)؟", a:"نبيل شعيل", youtubeQuery:"يا ليل ما أطولك نبيل شعيل"},
+      {q:"من غنى أغنية (تناديك)؟", a:"نوال الكويتية", youtubeQuery:"تناديك نوال الكويتية"},
+      {q:"من غنى أغنية (بشرة خير)؟", a:"حسين الجسمي", youtubeQuery:"بشرة خير حسين الجسمي"},
+      {q:"من غنى أغنية (نور العين)؟", a:"عمرو دياب", youtubeQuery:"نور العين عمرو دياب"},
+      {q:"من غنى أغنية (يا نار شبي)؟", a:"محمد البلوشي", youtubeQuery:"يا نار شبي محمد البلوشي"}
+    ],
+    200: [
+      {q:"من غنى أغنية (أنا بتبع قلبي)؟", a:"عبدالله الرويشد", youtubeQuery:"أنا بتبع قلبي عبدالله الرويشد"},
+      {q:"من غنى أغنية (أجر الصوت)؟", a:"عبدالكريم عبدالقادر", youtubeQuery:"أجر الصوت عبدالكريم عبدالقادر"},
+      {q:"من غنى أغنية (ما أروعك)؟", a:"نبيل شعيل", youtubeQuery:"ما أروعك نبيل شعيل"},
+      {q:"من غنى أغنية (القلوب الساهية)؟", a:"نوال الكويتية", youtubeQuery:"القلوب الساهية نوال الكويتية"},
+      {q:"من غنى أغنية (وحشتيني)؟", a:"عمرو دياب", youtubeQuery:"وحشتيني عمرو دياب"},
+      {q:"من غنى أغنية (زهرة المدائن)؟", a:"فيروز", youtubeQuery:"زهرة المدائن فيروز"},
+      {q:"من غنى أغنية (صوت السهارى)؟", a:"عوض دوخي", youtubeQuery:"صوت السهارى عوض دوخي"}
+    ],
+    300: [
+      {q:"من غنى أغنية (مسحور)؟", a:"عبدالله الرويشد", youtubeQuery:"مسحور عبدالله الرويشد"},
+      {q:"من غنى أغنية (وداعية)؟", a:"عبدالكريم عبدالقادر", youtubeQuery:"وداعية عبدالكريم عبدالقادر"},
+      {q:"من غنى أغنية (شمسوي مع غيري)؟", a:"نبيل شعيل", youtubeQuery:"شمسوي مع غيري نبيل شعيل"},
+      {q:"من غنى أغنية (خمس جروح)؟", a:"نوال الكويتية", youtubeQuery:"خمس جروح نوال الكويتية"},
+      {q:"من غنى أغنية (قارئة الفنجان)؟", a:"عبد الحليم حافظ", youtubeQuery:"قارئة الفنجان عبد الحليم حافظ"},
+      {q:"من غنى أغنية (يا ليلة العيد)؟", a:"فيروز", youtubeQuery:"يا ليلة العيد فيروز"},
+      {q:"من غنى أغنية (يا من هواه)؟", a:"عوض دوخي", youtubeQuery:"يا من هواه عوض دوخي"}
+    ],
+    400: [
+      {q:"من غنى أغنية (أرجوك)؟", a:"عبدالله الرويشد", youtubeQuery:"أرجوك عبدالله الرويشد"},
+      {q:"من غنى أغنية (تكون ظالم)؟", a:"عبدالكريم عبدالقادر", youtubeQuery:"تكون ظالم عبدالكريم عبدالقادر"},
+      {q:"من غنى أغنية (منساك)؟", a:"نبيل شعيل", youtubeQuery:"منساك نبيل شعيل"},
+      {q:"من غنى أغنية (أعرف رجلاً)؟", a:"نوال الكويتية", youtubeQuery:"أعرف رجلا نوال الكويتية"},
+      {q:"من غنى أغنية (أنت عمري)؟", a:"أم كلثوم", youtubeQuery:"أنت عمري أم كلثوم"},
+      {q:"من غنى أغنية (يا مسافر وحدك)؟", a:"فريد الأطرش", youtubeQuery:"يا مسافر وحدك فريد الأطرش"},
+      {q:"من غنى أغنية (ألا يا صبا نجد)؟", a:"عوض دوخي", youtubeQuery:"ألا يا صبا نجد عوض دوخي"}
+    ],
+    500: [
+      {q:"من غنى أغنية (تصور)؟", a:"عبدالله الرويشد", youtubeQuery:"تصور عبدالله الرويشد"},
+      {q:"من غنى أغنية (محال)؟", a:"عبدالكريم عبدالقادر", youtubeQuery:"محال عبدالكريم عبدالقادر"},
+      {q:"من غنى أغنية (مسك الختام)؟", a:"نبيل شعيل", youtubeQuery:"مسك الختام نبيل شعيل"},
+      {q:"من غنى أغنية (يا مصبر الموعود)؟", a:"نوال الكويتية", youtubeQuery:"يا مصبر الموعود نوال الكويتية"},
+      {q:"من غنى أغنية (الأطلال)؟", a:"أم كلثوم", youtubeQuery:"الأطلال أم كلثوم"},
+      {q:"من غنى أغنية (علمني الحب)؟", a:"كاظم الساهر", youtubeQuery:"علمني الحب كاظم الساهر"},
+      {q:"من غنى أغنية (فوق الهوى)؟", a:"نجاة الصغيرة", youtubeQuery:"فوق الهوى نجاة الصغيرة"}
+    ]
+  },
+  "معلومات عامة": {
+    100: [
+      {q:"كم دقيقة في الساعة الواحدة؟", a:"60 دقيقة"},
+      {q:"كم عدد أيام الأسبوع؟", a:"سبعة أيام"},
+      {q:"كم عدد أشهر السنة الميلادية؟", a:"12 شهرًا"},
+      {q:"كم عدد أشهر السنة الهجرية؟", a:"12 شهرًا"},
+      {q:"كم عدد الحروف في الأبجدية الإنجليزية؟", a:"26 حرفًا"},
+      {q:"كم عدد أيام شهر فبراير في السنة الكبيسة؟", a:"29 يومًا"},
+      {q:"كم عدد أضلاع الشكل السداسي؟", a:"ستة أضلاع"}
+    ],
+    200: [
+      {q:"كم عدد ألوان قطع الشطرنج التقليدية على الرقعة؟", a:"لونان: أبيض وأسود"},
+      {q:"كم تساوي نسبة 10% إذا كتبناها ككسر عشري؟", a:"0.1"},
+      {q:"ما هو العنصر الكيميائي الذي يحمل الرمز Au؟", a:"الذهب"},
+      {q:"هل الشطرنج لعبة فردية أم جماعية؟", a:"فردية (لاعب واحد لكل جهة)"},
+      {q:"ما هي الوحدة الأساسية لقياس الكتلة في النظام الدولي؟", a:"الكيلوغرام"},
+      {q:"عند كم درجة مئوية يغلي الماء عند الضغط الجوي العادي؟", a:"100 درجة مئوية"},
+      {q:"كم عدد أرجل العنكبوت؟", a:"ثمانية أرجل"}
+    ],
+    300: [
+      {q:"كم عدد كواكب المجموعة الشمسية حاليًا؟", a:"ثمانية كواكب"},
+      {q:"كم عدد أرجل الحشرة بشكل عام؟", a:"ستة أرجل"},
+      {q:"ما هو أكبر عضو في جسم الإنسان من حيث المساحة؟", a:"الجلد"},
+      {q:"كم عدد ألوان علم دولة الكويت؟", a:"أربعة ألوان: أخضر وأبيض وأحمر وأسود"},
+      {q:"كم فلسًا يعادل الدينار الكويتي الواحد؟", a:"1000 فلس"},
+      {q:"كم عدد القارات المأهولة بشكل دائم في العالم؟", a:"ست قارات"},
+      {q:"كم عدد أسنان الإنسان البالغ الطبيعية؟", a:"32 سنًا"}
+    ],
+    400: [
+      {q:"ما هو أطول عظم في جسم الإنسان؟", a:"عظم الفخذ"},
+      {q:"ما هو أعلى برج (مبنى) في العالم حاليًا؟", a:"برج خليفة في دبي"},
+      {q:"ما اسم المقياس المستخدم لقياس شدة الزلازل؟", a:"مقياس ريختر"},
+      {q:"ما هو أسرع طائر في العالم أثناء الانقضاض؟", a:"الصقر الشاهين"},
+      {q:"كم عدد الدول الأعضاء الدائمين في مجلس الأمن الدولي؟", a:"5 دول"},
+      {q:"كم عدد قلوب الأخطبوط؟", a:"ثلاثة قلوب"},
+      {q:"ما اسم اليوم الذي يكون فيه النهار أطول ما يمكن في نصف الكرة الشمالي؟", a:"الانقلاب الصيفي (حوالي 21 يونيو)"}
+    ],
+    500: [
+      {q:"كم عدد فقرات العمود الفقري عند الإنسان؟", a:"33 فقرة"},
+      {q:"ما اسم الوحدة المستخدمة لقياس سرعة السفن والرياح؟", a:"العقدة (Knot)"},
+      {q:"كم عدد العظام في اليد الواحدة عند الإنسان شاملة الرسغ والأصابع؟", a:"27 عظمة"},
+      {q:"كم عدد عضلات الوجه البشري تقريبًا؟", a:"حوالي 43 عضلة"},
+      {q:"ما اسم أصغر عظمة في جسم الإنسان؟", a:"عظمة الركاب (بالأذن الوسطى)"},
+      {q:"ما اسم أول قمر صناعي عربي أُطلق إلى الفضاء؟", a:"العربسات (ARABSAT-1)"},
+      {q:"ما هو أكثر عنصر وفرة في القشرة الأرضية؟", a:"الأكسجين"}
+    ]
+  },
+  "تقنية وتكنولوجيا": {
+    100: [
+      {q:"ما اسم أشهر محرك بحث في العالم؟", a:"جوجل (Google)"},
+      {q:"ما اسم الشركة المصنعة لهاتف آيفون؟", a:"شركة آبل (Apple)"},
+      {q:"ما اسم نظام التشغيل الذي طورته جوجل للهواتف الذكية؟", a:"أندرويد (Android)"},
+      {q:"ما هو الرمز المستخدم في عناوين البريد الإلكتروني (@)؟", a:"أت (at)"},
+      {q:"من مؤسس شركة مايكروسوفت؟", a:"بيل غيتس"},
+      {q:"ما اسم برنامج المحادثة الشهير المملوك لشركة ميتا؟", a:"واتساب"},
+      {q:"ما اسم الجهاز المستخدم لتخزين الملفات ونقلها بين الحواسيب؟", a:"الفلاشة (USB)"},
+      {q:"ما اسم الشبكة الاجتماعية التي تركز على مشاركة الصور والفيديوهات القصيرة؟", a:"إنستغرام"},
+      {q:"ما اسم الشركة المصنعة لأجهزة بلايستيشن؟", a:"سوني"},
+      {q:"ما اسم برنامج تحرير النصوص الأشهر من شركة مايكروسوفت؟", a:"Microsoft Word"},
+      {q:"ما اسم متصفح الإنترنت الحديث الذي طورته شركة مايكروسوفت؟", a:"إيدج (Edge)"},
+      {q:"ما اسم الشركة المصنعة لأجهزة إكس بوكس؟", a:"مايكروسوفت"},
+      {q:"ما اسم تطبيق الفيديوهات القصيرة الصيني المنتشر عالميًا؟", a:"تيك توك"},
+      {q:"ما اسم نظام التشغيل الذي تستخدمه أغلب أجهزة آبل المكتبية؟", a:"macOS"},
+      {q:"ما اسم أول شركة صنعت الهاتف الذكي بشاشة لمس واسعة الانتشار؟", a:"آبل (آيفون)"}
+    ],
+    200: [
+      {q:"من مؤسس شركة أبل (Apple)؟", a:"ستيف جوبز"},
+      {q:"من مؤسس شركة أمازون؟", a:"جيف بيزوس"},
+      {q:"من مؤسس شركتي تسلا وسبيس إكس؟", a:"إيلون ماسك"},
+      {q:"من مؤسس شركة ميتا (فيسبوك سابقًا)؟", a:"مارك زوكربيرغ"},
+      {q:"ما اسم الشركة التي أنشأت متصفح Chrome؟", a:"جوجل"},
+      {q:"من مؤسس شركة تويتر (إكس حاليًا)؟", a:"جاك دورسي"},
+      {q:"ما اسم أول محرك بحث انتشر بشكل واسع قبل جوجل؟", a:"ياهو"},
+      {q:"ما اسم اللغة البرمجية الأشهر لتطوير مواقع الويب التفاعلية بالمتصفح؟", a:"جافاسكريبت"},
+      {q:"من مؤسس شركة نتفليكس؟", a:"ريد هاستينغز"},
+      {q:"ما اسم أول شبكة تواصل اجتماعي شهيرة قبل فيسبوك؟", a:"ماي سبيس"},
+      {q:"من مؤسس شركة سناب شات؟", a:"إيفان شبيغل"},
+      {q:"ما اسم نظام الدفع الإلكتروني الذي أسسه إيلون ماسك قبل تسلا؟", a:"باي بال (PayPal)"},
+      {q:"ما اسم أول متصفح إنترنت انتشر بشكل واسع في التسعينيات؟", a:"نتسكيب (Netscape)"},
+      {q:"ما هو اختصار HTML؟", a:"لغة توصيف النص التشعبي"},
+      {q:"ما اسم بروتوكول التشفير الذي يجعل تصفح المواقع آمنًا (https)؟", a:"SSL/TLS"}
+    ],
+    300: [
+      {q:"ما هو الاسم الشائع لشبكة الإنترنت العالمية؟", a:"الويب (World Wide Web)"},
+      {q:"ما هو اختصار AI باللغة الإنجليزية؟", a:"الذكاء الاصطناعي (Artificial Intelligence)"},
+      {q:"ما اسم أول عملة رقمية مشفّرة لامركزية انتشرت عالميًا؟", a:"البيتكوين"},
+      {q:"ما هو اختصار USB؟", a:"ناقل تسلسلي عام (Universal Serial Bus)"},
+      {q:"ما هي وحدة قياس سرعة معالج الحاسوب؟", a:"الهرتز (غيغاهرتز)"},
+      {q:"من مؤسس شركة إنفيديا المتخصصة بمعالجات الرسوميات؟", a:"جنسن هوانغ"},
+      {q:"من هو مطور نظام التشغيل لينكس مفتوح المصدر؟", a:"لينوس تورفالدس"},
+      {q:"ما هو اختصار CPU؟", a:"وحدة المعالجة المركزية"},
+      {q:"من مؤسس شركة علي بابا الصينية؟", a:"جاك ما"},
+      {q:"ما اسم أول شبكة اجتماعية مهنية مخصصة للتوظيف؟", a:"LinkedIn"},
+      {q:"ما هو اختصار RAM؟", a:"الذاكرة العشوائية"},
+      {q:"ما اسم أول حاسوب شخصي أنتجته شركة آبل؟", a:"Apple I"},
+      {q:"ما هو اختصار GPU؟", a:"وحدة معالجة الرسوميات"},
+      {q:"من مؤسس منصة ويكيبيديا؟", a:"جيمي ويلز"},
+      {q:"ما اسم أول شركة أطلقت خدمة بث موسيقي رقمي بالاشتراك الشهري بشكل واسع؟", a:"Spotify"}
+    ],
+    400: [
+      {q:"ما اسم الشركة التي طورت منصة ChatGPT؟", a:"شركة OpenAI"},
+      {q:"ما هو اختصار URL؟", a:"عنوان الموقع الموحّد (Uniform Resource Locator)"},
+      {q:"ما اسم لغة البرمجة الشهيرة المسمّاة على اسم نوع من القهوة؟", a:"جافا (Java)"},
+      {q:"ما اسم أول قمر صناعي أُطلق إلى الفضاء؟", a:"سبوتنيك 1"},
+      {q:"ما اسم الهجوم الذي يغرق موقعًا إلكترونيًا بطلبات وهمية لتعطيله؟", a:"هجوم حجب الخدمة (DDoS)"},
+      {q:"من مخترع الفأرة الحاسوبية؟", a:"دوغلاس إنجلبارت"},
+      {q:"ما اسم أول فيروس حاسوب انتشر عالميًا عبر البريد الإلكتروني بشكل كبير عام 2000؟", a:"فيروس ILOVEYOU"},
+      {q:"من مؤسس شركة أوراكل؟", a:"لاري إليسون"},
+      {q:"من مطور أول لغة برمجة عالية المستوى (فورتران)؟", a:"جون باكوس"},
+      {q:"ما اسم أول شبكة حاسوبية تجريبية سبقت الإنترنت الحديث؟", a:"ARPANET"},
+      {q:"من مؤسسا شركة WhatsApp؟", a:"جان كوم وبريان أكتون"},
+      {q:"ما اسم أول حاسوب إلكتروني عام قابل للبرمجة في التاريخ؟", a:"ENIAC"},
+      {q:"ما اسم الشركة اليابانية الرائدة بصناعة ألعاب الفيديو وشخصية ماريو؟", a:"نينتندو"},
+      {q:"من مؤسسا شركة Adobe؟", a:"جون وارنوك وتشارلز جيشكي"},
+      {q:"ما اسم أول شركة قدمت خدمة البريد الإلكتروني المجاني على نطاق واسع؟", a:"Hotmail"}
+    ],
+    500: [
+      {q:"ما اسم شركة الذكاء الاصطناعي التي طورت مساعد Claude؟", a:"Anthropic"},
+      {q:"من مخترع الشبكة العنكبوتية العالمية (الويب)؟", a:"تيم بيرنرز-لي"},
+      {q:"أي شركة صنعت أول معالج دقيق تجاري (مايكروبروسيسور)؟", a:"شركة إنتل (Intel)"},
+      {q:"ما اسم الاختبار الذي يقيس قدرة الآلة على محاكاة الذكاء البشري في المحادثة؟", a:"اختبار تورينج"},
+      {q:"ما هو الاسم الأصلي لمشروع جوجل عند تأسيسه كمشروع بحثي بجامعة ستانفورد؟", a:"BackRub"},
+      {q:"من مخترع أول شبكة عصبية اصطناعية (Perceptron)؟", a:"فرانك روزنبلات"},
+      {q:"ما اسم أول لغة برمجة كائنية التوجه بالكامل؟", a:"Smalltalk"},
+      {q:"من هو العالم الذي يُلقب بـ(أبو الذكاء الاصطناعي الحديث) لأبحاثه في الشبكات العصبية؟", a:"جيفري هينتون"},
+      {q:"ما اسم أول نظام تشغيل طورته شركة مايكروسوفت تجاريًا؟", a:"MS-DOS"},
+      {q:"من مؤسس شركة تينسنت الصينية المالكة لتطبيق WeChat؟", a:"بوني ما (ما هوا تنغ)"},
+      {q:"ما اسم أول معالج رسومي (GPU) تجاري أطلقته إنفيديا؟", a:"GeForce 256"},
+      {q:"من هم مخترعو خوارزمية التشفير RSA المستخدمة في أمان الإنترنت؟", a:"ريفست وشامير وأدلمان"},
+      {q:"ما اسم أول قمر صناعي تجاري للاتصالات أُطلق للفضاء؟", a:"Telstar 1"},
+      {q:"من هو مخترع الترميز الثنائي (Binary Code) الذي يعتمد عليه الحاسوب؟", a:"غوتفريد لايبنتز"},
+      {q:"ما اسم أول متصفح إنترنت طُوّر في التاريخ؟", a:"WorldWideWeb"}
+    ]
+  },
+  "خمن اللاعب": {
+    100: [
+      {q:"لاعب أرجنتيني، صاحب أكثر عدد كرات ذهبية في التاريخ، لعب لبرشلونة ثم باريس سان جيرمان والآن إنتر ميامي. من هو؟", a:"ليونيل ميسي"},
+      {q:"لاعب برتغالي يُلقب بـ(الدون)، صاحب أكثر عدد أهداف دولية في تاريخ كرة القدم. من هو؟", a:"كريستيانو رونالدو"},
+      {q:"لاعب مصري يلعب لنادي ليفربول الإنجليزي، ويُلقب بـ(الفرعون المصري). من هو؟", a:"محمد صلاح"},
+      {q:"لاعب برازيلي أسطوري معتزل، يُلقب بـ(الظاهرة) وفاز بكأس العالم مرتين. من هو؟", a:"رونالدو نازاريو"},
+      {q:"لاعب فرنسي شاب، فاز بكأس العالم وهو مراهق عام 2018، ولعب لباريس سان جيرمان ثم ريال مدريد. من هو؟", a:"كيليان مبابي"},
+      {q:"لاعب برازيلي يلعب حاليًا لريال مدريد، يشتهر بالسرعة والمراوغة. من هو؟", a:"فينيسيوس جونيور"},
+      {q:"لاعب نرويجي، هداف مميز يلعب لمانشستر سيتي، ولُقب بـ(الوحش). من هو؟", a:"إيرلينغ هالاند"},
+      {q:"لاعب إنجليزي شاب يلعب لريال مدريد حاليًا، كان نجم منتخب إنجلترا الشاب. من هو؟", a:"جود بيلينغهام"},
+      {q:"لاعب فرنسي يلعب حاليًا لريال مدريد، فاز بالكرة الذهبية عام 2022. من هو؟", a:"كريم بنزيما"},
+      {q:"لاعب إسباني أسطوري، سجل هدف الفوز بكأس العالم 2010 لصالح إسبانيا. من هو؟", a:"أندريس إنييستا"},
+      {q:"لاعب هولندي أسطوري لُقب بـ(الطائر الهولندي الطائر) لمهاراته الهوائية. من هو؟", a:"دينيس بيرغكامب"},
+      {q:"لاعبة برازيلية تُعد أفضل لاعبة كرة قدم نسائية في تاريخ أمريكا الجنوبية. من هي؟", a:"مارتا"},
+      {q:"لاعب إيطالي أسطوري، هداف تاريخي لمنتخب إيطاليا، ولعب ليوفنتوس. من هو؟", a:"أليساندرو ديل بييرو"},
+      {q:"لاعبة أمريكية، هدافة تاريخية لمنتخب بلادها في كرة القدم النسائية. من هي؟", a:"أبي وامباخ"},
+      {q:"لاعب برتغالي شاب موهوب يلعب لبايرن ميونخ، من أبرز نجوم الأجنحة الأوروبية حاليًا. من هو؟", a:"جواو فيليكس"}
+    ],
+    200: [
+      {q:"لاعب برازيلي أسطوري يُلقب بـ(الملك)، فاز بثلاث كؤوس عالم مع منتخب بلاده. من هو؟", a:"بيليه"},
+      {q:"لاعب أرجنتيني أسطوري قاد منتخب بلاده للفوز بكأس العالم عام 1986. من هو؟", a:"دييغو مارادونا"},
+      {q:"لاعب ألماني أسطوري يُلقب بـ(القيصر)، ولعب في خط الدفاع لمنتخب ألمانيا الغربية. من هو؟", a:"فرانز بيكنباور"},
+      {q:"لاعب بلجيكي اشتهر بالسرعة والمراوغة، ولعب لتشيلسي ثم ريال مدريد. من هو؟", a:"إيدين هازارد"},
+      {q:"لاعب كرواتي قاد منتخب بلاده لنهائي كأس العالم 2018 وفاز بالكرة الذهبية لأفضل لاعب بالبطولة. من هو؟", a:"لوكا مودريتش"},
+      {q:"لاعب سويدي أسطوري، هداف تاريخي، اشتهر بالثقة الزائدة بالنفس في تصريحاته. من هو؟", a:"زلاتان إبراهيموفيتش"},
+      {q:"لاعب إنجليزي أسطوري، لعب في وسط الملعب لمانشستر يونايتد لسنوات طويلة. من هو؟", a:"رايان غيغز"},
+      {q:"لاعب برازيلي أسطوري، لُقب بـ(الروماريو) وسجل أهدافًا حاسمة بكأس العالم 1994. من هو؟", a:"روماريو"},
+      {q:"لاعب فرنسي أسطوري، لعب لآرسنال وكان هدافها التاريخي. من هو؟", a:"تييري هنري"},
+      {q:"لاعب إسباني أسطوري، حارس مرمى برشلونة السابق وقائد منتخب إسبانيا الفائز بكأس العالم 2010. من هو؟", a:"إيكر كاسياس"},
+      {q:"لاعب ألماني أسطوري، هداف تاريخي لمنتخب ألمانيا، ولعب لبايرن ميونخ. من هو؟", a:"غيرد مولر"},
+      {q:"لاعب إيطالي أسطوري، هداف عالمي ولعب لإنتر ميلان وميلان. من هو؟", a:"روبرتو بادجيو"},
+      {q:"لاعب برتغالي أسطوري، لعب لبرشلونة وريال مدريد قبل عصر رونالدو. من هو؟", a:"لويس فيغو"},
+      {q:"لاعبة ألمانية أسطورية، تُعد أفضل لاعبة كرة قدم نسائية في تاريخ أوروبا. من هي؟", a:"بيرغيت براش"},
+      {q:"لاعب أرجنتيني أسطوري، هداف عالمي لعب لريال مدريد وأتلتيكو مدريد. من هو؟", a:"سيرجيو أغويرو"}
+    ],
+    300: [
+      {q:"لاعب سويدي طويل القامة اشتهر بالأهداف الأكروباتية، ولعب لأندية منها ميلان وباريس سان جيرمان. من هو؟", a:"زلاتان إبراهيموفيتش"},
+      {q:"حارس مرمى إسباني أسطوري لعب لريال مدريد لسنوات طويلة ويُعد من أفضل الحراس بالتاريخ. من هو؟", a:"إيكر كاسياس"},
+      {q:"لاعب ألماني كان قائد منتخب بلاده الفائز بكأس العالم 2014. من هو؟", a:"فيليب لام"},
+      {q:"لاعب إيطالي أسطوري لعب مدافعًا لنادي ميلان لما يقارب عشرين عامًا. من هو؟", a:"باولو مالديني"},
+      {q:"لاعب فرنسي أسطوري كان قائد منتخب بلاده الفائز بكأس العالم عام 1998. من هو؟", a:"زين الدين زيدان"},
+      {q:"لاعب برتغالي، حارس مرمى أسطوري لعب لبورتو وريال مدريد وكان بطل دوري أبطال أوروبا مع بورتو. من هو؟", a:"فيتور بايا"},
+      {q:"لاعب إنجليزي، مدافع أسطوري لعب لتشيلسي وكان قائد المنتخب الإنجليزي. من هو؟", a:"جون تيري"},
+      {q:"لاعب إسباني، صانع ألعاب أسطوري لعب لبرشلونة ومانشستر سيتي. من هو؟", a:"تشافي هيرنانديز"},
+      {q:"لاعب برازيلي، مدافع أسطوري كان قائد منتخب البرازيل الفائز بكأس العالم 2002. من هو؟", a:"كافو"},
+      {q:"لاعب برازيلي، صانع ألعاب أسطوري لُقب بـ(الساحر) ولعب لريال مدريد وميلان. من هو؟", a:"كاكا"},
+      {q:"لاعب أوروغواياني، مهاجم عنيد لعب لأياكس وليفربول قبل برشلونة. من هو؟", a:"لويس سواريز"},
+      {q:"لاعب كرواتي، صانع ألعاب أسطوري لعب لريال مدريد لسنوات طويلة. من هو؟", a:"لوكا مودريتش"},
+      {q:"لاعب إيطالي، مدافع أسطوري كان قائد منتخب إيطاليا الفائز بكأس العالم 2006. من هو؟", a:"فابيو كانافارو"},
+      {q:"لاعب هولندي، مهاجم أسطوري لعب لميلان وبرشلونة، هداف تاريخي بالدوري الهولندي. من هو؟", a:"مارکو فان باستن"},
+      {q:"لاعب أرجنتيني، حارس مرمى أسطوري تألق في كأس العالم 1990 بتصديه لركلات الترجيح. من هو؟", a:"سيرجيو غويكوتشيا"}
+    ],
+    400: [
+      {q:"لاعب إنجليزي أسطوري لعب لمانشستر يونايتد، اشتهر بركلاته الحرة الدقيقة. من هو؟", a:"ديفيد بيكهام"},
+      {q:"لاعب أوروغواياني هداف مميز، لعب لبرشلونة مع ميسي ونيمار في هجوم واحد. من هو؟", a:"لويس سواريز"},
+      {q:"لاعب برازيلي لعب جناحًا لبرشلونة ثم باريس سان جيرمان، ويشتهر بمهاراته الفردية العالية. من هو؟", a:"نيمار"},
+      {q:"حارس مرمى ألماني فاز بكأس العالم 2014، ويُعرف بأسلوبه الجريء في اللعب خارج منطقة الجزاء. من هو؟", a:"مانويل نوير"},
+      {q:"لاعب هولندي أسطوري اشتهرت باسمه حركة مراوغة شهيرة في كرة القدم. من هو؟", a:"يوهان كرويف"},
+      {q:"لاعب برازيلي، صاحب الابتسامة الشهيرة، فاز بالكرة الذهبية عام 2005. من هو؟", a:"رونالدينيو"},
+      {q:"لاعب فرنسي، حارس مرمى أسطوري لعب لتوتنهام وفاز بكأس العالم 2018. من هو؟", a:"هوغو لوريس"},
+      {q:"لاعب إنجليزي، مهاجم أسطوري لعب لتوتنهام ويحمل الرقم القياسي كهداف تاريخي للدوري الإنجليزي. من هو؟", a:"هاري كين"},
+      {q:"لاعب بلجيكي، صانع ألعاب أسطوري لعب لمانشستر سيتي. من هو؟", a:"كيفن دي بروين"},
+      {q:"لاعب سنغالي، هداف مميز لعب لليفربول وبايرن ميونخ. من هو؟", a:"ساديو ماني"},
+      {q:"لاعب إيفواري، مهاجم قوي لعب لتشيلسي، من أفضل لاعبي أفريقيا تاريخيًا. من هو؟", a:"ديدييه دروغبا"},
+      {q:"لاعب كاميروني أسطوري، فاز بجائزة أفضل لاعب أفريقي عدة مرات، لعب لبرشلونة. من هو؟", a:"صامويل إيتو"},
+      {q:"لاعب غاني، صانع ألعاب لعب لتشيلسي ومانشستر سيتي. من هو؟", a:"مايكل إيسيان"},
+      {q:"لاعبة نرويجية أسطورية، أول فائزة بالكرة الذهبية النسائية عام 2018. من هي؟", a:"آدا هيغربرغ"},
+      {q:"لاعب مغربي، مدافع أسطوري قاد المنتخب المغربي لدور الأربعة بكأس العالم 2022. من هو؟", a:"أشرف حكيمي"}
+    ],
+    500: [
+      {q:"لاعب فرنسي أسطوري كان الهداف التاريخي لمنتخب بلاده قبل أن يتجاوزه مبابي، ولعب لموناكو وآرسنال. من هو؟", a:"تييري هنري"},
+      {q:"حارس مرمى إيطالي أسطوري لعب لنادي يوفنتوس لسنوات طويلة، ويُعد من أفضل حراس المرمى في التاريخ. من هو؟", a:"جانلويجي بوفون"},
+      {q:"لاعب برتغالي أسطوري سابق لعصر رونالدو، لعب لبرشلونة ثم ريال مدريد. من هو؟", a:"لويس فيغو"},
+      {q:"حارس مرمى بلجيكي يلعب حاليًا لريال مدريد، ويُعد من أفضل حراس العالم. من هو؟", a:"تيبو كورتوا"},
+      {q:"لاعب أوروغواياني، مدافع صلب كان قائد منتخب بلاده، ولعب لأياكس وإنتر ميلان وأتلتيكو مدريد. من هو؟", a:"دييغو غودين"},
+      {q:"لاعب أوروغواياني سجل الهدف الحاسم في نهائي كأس العالم 1950 المعروف بـ(الماراكانازو). من هو؟", a:"ألسيدس غيجيا"},
+      {q:"لاعب مجري أسطوري، هداف عالمي في الخمسينيات، لُقب بـ(العقيد). من هو؟", a:"فيرينتس بوشكاش"},
+      {q:"لاعبة صينية أسطورية، فازت بجائزة أفضل لاعبة بالقرن العشرين من فيفا. من هي؟", a:"سون وين"},
+      {q:"لاعب ألماني، هداف تاريخي لكأس العالم برصيد 16 هدفًا عبر 4 نسخ. من هو؟", a:"ميروسلاف كلوزه"},
+      {q:"لاعبة كندية، تحمل الرقم القياسي كأكثر لاعب/ة تسجيلًا دوليًا في تاريخ كرة القدم. من هي؟", a:"كريستين سينكلير"},
+      {q:"لاعب إنجليزي، حارس مرمى أسطوري كان قائد منتخب إنجلترا الفائز بكأس العالم 1966. من هو؟", a:"غوردون بانكس"},
+      {q:"لاعب أوكراني، فاز بالكرة الذهبية عام 2004 ولعب لميلان. من هو؟", a:"أندريه شيفتشينكو"},
+      {q:"لاعب بلغاري، هداف عالمي، فاز بالكرة الذهبية عام 1994 ولعب لبرشلونة. من هو؟", a:"هرستو ستويتشكوف"},
+      {q:"لاعب تشيكي، حارس مرمى أسطوري لُقب بـ(القط) للياقته العالية. من هو؟", a:"بيتر تشيك"},
+      {q:"لاعب سلوفيني، حارس مرمى أسطوري يلعب لأتلتيكو مدريد ويُعد من أفضل حراس العالم حاليًا. من هو؟", a:"يان أوبلاك"}
+    ]
+  },
+  "من هذه الشخصية": {
+    100: [
+      {q:"ممثل أمريكي جسّد شخصية (جاك سبارو) في سلسلة أفلام قراصنة الكاريبي. من هو؟", a:"جوني ديب"},
+      {q:"ممثلة أمريكية جسّدت شخصية (هيرميون) في سلسلة أفلام هاري بوتر. من هي؟", a:"إيما واطسون"},
+      {q:"ممثل أمريكي جسّد شخصية (آيرون مان) في أفلام مارفل. من هو؟", a:"روبرت داوني جونيور"},
+      {q:"ممثل مصري يُعد من أشهر نجوم الكوميديا في السينما المصرية، يُلقب بـ(الزعيم). من هو؟", a:"عادل إمام"},
+      {q:"ممثلة أمريكية جسّدت شخصية (روز) في فيلم تايتانيك. من هي؟", a:"كيت وينسلت"}
+    ],
+    200: [
+      {q:"ممثل أمريكي جسّد شخصية (باتمان) في ثلاثية المخرج كريستوفر نولان. من هو؟", a:"كريستيان بيل"},
+      {q:"ممثل مصري كوميدي اشتهر بلقب (الوزة) وأدائه المميز في السينما المصرية. من هو؟", a:"محمد هنيدي"},
+      {q:"ممثلة أمريكية جسّدت شخصية (بلاك ويدو) في أفلام مارفل. من هي؟", a:"سكارليت جوهانسون"},
+      {q:"ممثل مصري راحل يُلقب بـ(الرجل الذي يشبهنا)، جسّد شخصية الرئيس جمال عبدالناصر في فيلم يحمل اسمه. من هو؟", a:"أحمد زكي"},
+      {q:"ممثل أمريكي جسّد شخصية (فورست غامب) وفاز بجائزة الأوسكار عن هذا الدور. من هو؟", a:"توم هانكس"}
+    ],
+    300: [
+      {q:"ممثلة مصرية راحلة تُلقب بـ(سندريلا الشاشة العربية)، اشتهرت في أفلام كلاسيكية عديدة. من هي؟", a:"سعاد حسني"},
+      {q:"ممثل أمريكي جسّد شخصية (الجوكر) في فيلم عام 2019 وفاز بجائزة الأوسكار عن هذا الدور. من هو؟", a:"واكين فينيكس"},
+      {q:"ممثل بريطاني جسّد شخصية (شيرلوك هولمز) في مسلسل تلفزيوني بريطاني حديث شهير. من هو؟", a:"بنديكت كمبرباتش"},
+      {q:"ممثلة أمريكية فازت بجائزة الأوسكار عن دورها في فيلم (لا لاند) لأفضل ممثلة. من هي؟", a:"إيما ستون"},
+      {q:"ممثل هوليوودي جسّد شخصية (ولفيرين) في أفلام إكس مان لسنوات طويلة. من هو؟", a:"هيو جاكمان"}
+    ],
+    400: [
+      {q:"ممثلة أمريكية جسّدت شخصية (كاتنيس إيفردين) في سلسلة أفلام (ألعاب الجوع). من هي؟", a:"جينيفر لورنس"},
+      {q:"ممثل بريطاني جسّد شخصية (جيمس بوند) في عدة أفلام بين عامي 2006 و2021. من هو؟", a:"دانيال كريغ"},
+      {q:"ممثلة أمريكية جسّدت شخصية (المرأة العجيبة) في سلسلة أفلام دي سي. من هي؟", a:"غال غادوت"},
+      {q:"ممثل هندي يُعد من أشهر نجوم بوليوود، ويُلقب بـ(الملك خان). من هو؟", a:"شاروخان"},
+      {q:"ممثل أمريكي جسّد شخصية (الجوكر) في فيلم (الفارس الأسود) عام 2008 وفاز بجائزة الأوسكار بعد وفاته عن هذا الدور. من هو؟", a:"هيث ليدجر"}
+    ],
+    500: [
+      {q:"ممثل بريطاني جسّد شخصية (الملك جورج السادس) في فيلم (خطاب الملك) وفاز بجائزة الأوسكار عن هذا الدور. من هو؟", a:"كولين فيرث"},
+      {q:"ممثل أمريكي جسّد شخصية (هانيبال ليكتر) في فيلم (صمت الحملان) وفاز بجائزة الأوسكار عن هذا الدور. من هو؟", a:"أنتوني هوبكنز"},
+      {q:"ممثلة بريطانية فازت بجائزتي أوسكار خلال مسيرتها، إحداهما عن فيلم (Blue Jasmine). من هي؟", a:"كيت بلانشيت"},
+      {q:"ممثل أمريكي حائز على عدة جوائز أوسكار، جسّد شخصية (دانيال بلاينفيو) في فيلم (There Will Be Blood). من هو؟", a:"دانيال داي لويس"},
+      {q:"ممثل ياباني أسطوري تعاون مرارًا مع المخرج أكيرا كوروساوا في أفلام ساموراي كلاسيكية. من هو؟", a:"توشيرو ميفونه"}
+    ]
+  },
+  "ولا كلمة": {
+    100: [],
+    200: [],
+    300: [],
+    400: [],
+    500: []
+  },
+  "رسم": {
+    100: [],
+    200: [],
+    300: [],
+    400: [],
+    500: []
+  }
+};
+
+const ALL_CATEGORIES = Object.keys(DATA);
+const MIN_CATS = 5, MAX_CATS = 8;
+
+let teams = [];
+let scores = [];
+let usedCells = new Set();
+let selectedCategories = [];
+let repeatCount = 2;
+let questionQueues = {};   // key -> array of shuffled indices remaining
+let cellQuestion = {};     // key -> the question object currently assigned (for this open cell)
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function drawQuestion(cat, val){
+  const key = cat + '-' + val;
+  const pool = DATA[cat][val];
+  if(!questionQueues[key] || questionQueues[key].length === 0){
+    questionQueues[key] = shuffle(pool.map((_, i) => i));
+  }
+  const idx = questionQueues[key].pop();
+  return pool[idx];
+}
+
+// ---- Step 1: team setup ----
+const teamInputsEl = document.getElementById('teamInputs');
+const defaultNames = ["الفريق الأول", "الفريق الثاني"];
+function renderTeamInputs(count){
+  teamInputsEl.innerHTML = '';
+  for(let i=0;i<count;i++){
+    const row = document.createElement('div');
+    row.className = 'team-input-row';
+    row.innerHTML = `
+      <div class="swatch" style="background:${TEAM_COLORS[i % TEAM_COLORS.length]}"></div>
+      <input type="text" maxlength="20" placeholder="${defaultNames[i] || 'اسم الفريق ' + (i+1)}" data-idx="${i}">
+    `;
+    teamInputsEl.appendChild(row);
+  }
+}
+renderTeamInputs(2);
+
+document.getElementById('nextToCatBtn').addEventListener('click', () => {
+  const inputs = teamInputsEl.querySelectorAll('input');
+  teams = [];
+  inputs.forEach((inp, i) => {
+    const name = inp.value.trim() || (defaultNames[i] || 'الفريق ' + (i+1));
+    teams.push({ name, color: TEAM_COLORS[i % TEAM_COLORS.length] });
+  });
+  scores = teams.map(() => 0);
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('catPicker').style.display = 'block';
+  renderCatGrid();
+});
+
+document.getElementById('backToTeamsBtn').addEventListener('click', () => {
+  document.getElementById('catPicker').style.display = 'none';
+  document.getElementById('setup').style.display = 'block';
+});
+
+// ---- Step 2: category picker ----
+function renderCatGrid(){
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+  ALL_CATEGORIES.forEach(cat => {
+    const chip = document.createElement('div');
+    chip.className = 'cat-chip' + (selectedCategories.includes(cat) ? ' selected' : '');
+    chip.dataset.cat = cat;
+    chip.innerHTML = `
+      <span class="icon">${CATEGORY_ICONS[cat] || '❓'}</span>
+      <span class="label">${cat}</span>
+      <span class="check">${selectedCategories.includes(cat) ? '✓' : ''}</span>
+    `;
+    chip.addEventListener('click', () => toggleCategory(cat));
+    grid.appendChild(chip);
+  });
+  updateCatCounter();
+}
+
+function toggleCategory(cat){
+  const idx = selectedCategories.indexOf(cat);
+  if(idx >= 0){
+    selectedCategories.splice(idx, 1);
+  } else {
+    if(selectedCategories.length >= MAX_CATS) return;
+    selectedCategories.push(cat);
+  }
+  renderCatGrid();
+}
+
+function updateCatCounter(){
+  const n = selectedCategories.length;
+  const counter = document.getElementById('catCounter');
+  counter.textContent = `${n} محددة (المطلوب من ${MIN_CATS} إلى ${MAX_CATS})`;
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = !(n >= MIN_CATS && n <= MAX_CATS);
+}
+
+document.querySelectorAll('.repeat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    repeatCount = parseInt(btn.dataset.repeat, 10);
+  });
+});
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('catPicker').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  usedCells = new Set();
+  renderScoreboard();
+  renderBoard();
+});
+
+// ---- Game screen ----
+function renderScoreboard(){
+  const el = document.getElementById('scoreboard');
+  el.innerHTML = '';
+  teams.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'score-card';
+    card.style.setProperty('--team-color', t.color);
+    card.innerHTML = `<div class="name">${t.name}</div><div class="pts">${scores[i]}</div>`;
+    el.appendChild(card);
+  });
+}
+
+function renderBoard(){
+  const board = document.getElementById('board');
+  board.style.gridTemplateColumns = `repeat(${selectedCategories.length}, 1fr)`;
+  board.innerHTML = '';
+  selectedCategories.forEach(cat => {
+    const h = document.createElement('div');
+    h.className = 'cat-header';
+    h.innerHTML = `${CATEGORY_ICONS[cat] || ''}<br>${cat}`;
+    board.appendChild(h);
+  });
+  const baseValues = [100,200,300,400,500];
+  const values = [];
+  baseValues.forEach(v => { for(let i = 0; i < repeatCount; i++) values.push(v); });
+  values.forEach((val, rowIdx) => {
+    selectedCategories.forEach(cat => {
+      const cellKey = cat + '-' + val + '-' + rowIdx;
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (usedCells.has(cellKey) ? ' used' : '');
+      cell.textContent = usedCells.has(cellKey) ? '' : val;
+      cell.dataset.key = cellKey;
+      if(!usedCells.has(cellKey)){
+        cell.addEventListener('click', () => {
+          if(cat === "ولا كلمة"){
+            openWordGame(val, cellKey);
+          } else if(cat === "رسم"){
+            openDrawGame(val, cellKey);
+          } else {
+            openQuestion(cat, val, cellKey);
+          }
+        });
+      }
+      board.appendChild(cell);
+    });
+  });
+}
+
+// ---- Modal ----
+const overlay = document.getElementById('overlay');
+const modalCat = document.getElementById('modalCat');
+const modalVal = document.getElementById('modalVal');
+const modalMedia = document.getElementById('modalMedia');
+const modalQ = document.getElementById('modalQ');
+const modalA = document.getElementById('modalA');
+const revealBtn = document.getElementById('revealBtn');
+const awardRow = document.getElementById('awardRow');
+const closeBtn = document.getElementById('closeBtn');
+
+let currentKey = null, currentVal = null, currentItem = null;
+
+function openQuestion(cat, val, key){
+  currentKey = key;
+  currentVal = val;
+  const item = drawQuestion(cat, val);
+  currentItem = item;
+  modalCat.textContent = cat;
+  modalVal.textContent = val + ' نقطة';
+  modalMedia.innerHTML = '';
+  modalQ.classList.remove('quran');
+
+  if(item.flagEmoji){
+    modalMedia.innerHTML = `<div style="font-size:5.5rem;line-height:1;margin-bottom:12px;">${item.flagEmoji}</div>`;
+    modalQ.textContent = "ما اسم هذه الدولة؟";
+  } else if(item.icon){
+    modalMedia.innerHTML = `<div style="font-size:4rem;margin-bottom:8px;">${item.icon}</div>`;
+    modalQ.textContent = item.clue;
+  } else {
+    modalQ.textContent = item.q;
+    modalQ.classList.toggle('quran', !!item.quran);
+  }
+
+  modalA.classList.remove('show');
+  revealBtn.style.display = 'inline-block';
+  awardRow.classList.remove('show');
+  awardRow.innerHTML = '';
+  overlay.classList.add('show');
+}
+
+revealBtn.addEventListener('click', () => {
+  let answerHtml = currentItem.a;
+  if(currentItem.youtubeQuery){
+    const url = ytSearchUrl(currentItem.youtubeQuery);
+    answerHtml += `<br><a href="${url}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;color:var(--gold-bright);text-decoration:underline;font-size:0.95rem;">▶ شاهد على يوتيوب</a>`;
+  }
+  modalA.innerHTML = answerHtml;
+  modalA.classList.add('show');
+  revealBtn.style.display = 'none';
+  awardRow.innerHTML = '';
+  teams.forEach((t, i) => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-award';
+    b.style.setProperty('--team-color', t.color);
+    b.textContent = `نقطة لـ ${t.name}`;
+    b.addEventListener('click', () => {
+      scores[i] += currentVal;
+      finishQuestion();
+    });
+    awardRow.appendChild(b);
+  });
+  awardRow.classList.add('show');
+});
+
+closeBtn.addEventListener('click', finishQuestion);
+
+function finishQuestion(){
+  usedCells.add(currentKey);
+  overlay.classList.remove('show');
+  renderScoreboard();
+  renderBoard();
+  checkGameComplete();
+}
+
+function checkGameComplete(){
+  const totalCells = selectedCategories.length * 5 * repeatCount;
+  if(usedCells.size >= totalCells){
+    setTimeout(showWinner, 400);
+  }
+}
+
+// ---- Word game (ولا كلمة) - one word per cell ----
+let wgQueue = [];
+let wgTeamIdx = null;
+let wgKey = null;
+let wgVal = 0;
+let wgTimeLeft = 0;
+let wgTimerHandle = null;
+let wgRoundFinalized = false;
+
+const wordGameOverlay = document.getElementById('wordGameOverlay');
+const wgStepTeam = document.getElementById('wgStepTeam');
+const wgStepPlay = document.getElementById('wgStepPlay');
+const wgTeamRow = document.getElementById('wgTeamRow');
+const wgTimerEl = document.getElementById('wgTimer');
+const wgWordEl = document.getElementById('wgWord');
+const wgForbiddenEl = document.getElementById('wgForbidden');
+const wgSkipBtn = document.getElementById('wgSkipBtn');
+const wgCorrectBtn = document.getElementById('wgCorrectBtn');
+
+function openWordGame(val, cellKey){
+  wgKey = cellKey;
+  wgVal = val;
+  wgTeamIdx = null;
+
+  wgStepTeam.style.display = 'block';
+  wgStepPlay.style.display = 'none';
+
+  wgTeamRow.innerHTML = '';
+  teams.forEach((t, i) => {
+    const b = document.createElement('button');
+    b.className = 'wg-team-btn';
+    b.style.background = t.color;
+    b.textContent = t.name;
+    b.addEventListener('click', () => selectWgTeam(i));
+    wgTeamRow.appendChild(b);
+  });
+
+  wordGameOverlay.classList.add('show');
+}
+
+function selectWgTeam(i){
+  wgTeamIdx = i;
+  wgRoundFinalized = false;
+  wgStepTeam.style.display = 'none';
+  wgStepPlay.style.display = 'block';
+
+  if(wgQueue.length === 0){
+    wgQueue = shuffle(TABOO_WORDS.map((_, idx) => idx));
+  }
+  const idx = wgQueue.pop();
+  const card = TABOO_WORDS[idx];
+  wgWordEl.textContent = card.word;
+  wgForbiddenEl.innerHTML = card.forbidden.map(w => `<span>${w}</span>`).join('');
+
+  wgTimeLeft = WORD_GAME_TIME;
+  wgTimerEl.textContent = wgTimeLeft;
+  wgTimerHandle = setInterval(() => {
+    wgTimeLeft--;
+    wgTimerEl.textContent = wgTimeLeft;
+    if(wgTimeLeft <= 0){
+      resolveWordRound(0);
+    }
+  }, 1000);
+}
+
+wgCorrectBtn.addEventListener('click', () => resolveWordRound(wgVal));
+wgSkipBtn.addEventListener('click', () => resolveWordRound(0));
+
+function resolveWordRound(pointsAwarded){
+  if(wgRoundFinalized) return;
+  wgRoundFinalized = true;
+  clearInterval(wgTimerHandle);
+  scores[wgTeamIdx] += pointsAwarded;
+  usedCells.add(wgKey);
+  wordGameOverlay.classList.remove('show');
+  renderScoreboard();
+  renderBoard();
+  checkGameComplete();
+}
+
+// ---- Draw game (رسم) ----
+let dgQueue = [];
+let dgTeamIdx = null;
+let dgKey = null;
+let dgVal = 0;
+let dgTimeLeft = 0;
+let dgTimerHandle = null;
+let dgRoundFinalized = false;
+let dgDrawing = false;
+let dgCtx = null;
+
+const drawGameOverlay = document.getElementById('drawGameOverlay');
+const dgStepTeam = document.getElementById('dgStepTeam');
+const dgStepReveal = document.getElementById('dgStepReveal');
+const dgStepDraw = document.getElementById('dgStepDraw');
+const dgTeamRow = document.getElementById('dgTeamRow');
+const dgWordEl = document.getElementById('dgWord');
+const dgStartDrawBtn = document.getElementById('dgStartDrawBtn');
+const dgTimerEl = document.getElementById('dgTimer');
+const dgCanvas = document.getElementById('dgCanvas');
+const dgClearBtn = document.getElementById('dgClearBtn');
+const dgSkipBtn = document.getElementById('dgSkipBtn');
+const dgCorrectBtn = document.getElementById('dgCorrectBtn');
+
+function openDrawGame(val, cellKey){
+  dgKey = cellKey;
+  dgVal = val;
+  dgTeamIdx = null;
+
+  dgStepTeam.style.display = 'block';
+  dgStepReveal.style.display = 'none';
+  dgStepDraw.style.display = 'none';
+
+  dgTeamRow.innerHTML = '';
+  teams.forEach((t, i) => {
+    const b = document.createElement('button');
+    b.className = 'wg-team-btn';
+    b.style.background = t.color;
+    b.textContent = t.name;
+    b.addEventListener('click', () => selectDgTeam(i));
+    dgTeamRow.appendChild(b);
+  });
+
+  drawGameOverlay.classList.add('show');
+}
+
+function selectDgTeam(i){
+  dgTeamIdx = i;
+  dgRoundFinalized = false;
+  dgStepTeam.style.display = 'none';
+  dgStepReveal.style.display = 'block';
+
+  if(dgQueue.length === 0){
+    dgQueue = shuffle(DRAW_WORDS.map((_, idx) => idx));
+  }
+  const idx = dgQueue.pop();
+  dgWordEl.textContent = DRAW_WORDS[idx];
+}
+
+dgStartDrawBtn.addEventListener('click', () => {
+  dgStepReveal.style.display = 'none';
+  dgStepDraw.style.display = 'block';
+  clearCanvas();
+
+  dgTimeLeft = WORD_GAME_TIME;
+  dgTimerEl.textContent = dgTimeLeft;
+  dgTimerHandle = setInterval(() => {
+    dgTimeLeft--;
+    dgTimerEl.textContent = dgTimeLeft;
+    if(dgTimeLeft <= 0){
+      resolveDrawRound(0);
+    }
+  }, 1000);
+});
+
+function clearCanvas(){
+  if(!dgCtx) dgCtx = dgCanvas.getContext('2d');
+  dgCtx.fillStyle = '#ffffff';
+  dgCtx.fillRect(0, 0, dgCanvas.width, dgCanvas.height);
+  dgCtx.strokeStyle = '#16213a';
+  dgCtx.lineWidth = 4;
+  dgCtx.lineCap = 'round';
+  dgCtx.lineJoin = 'round';
+}
+dgClearBtn.addEventListener('click', clearCanvas);
+
+function getCanvasPos(e){
+  const rect = dgCanvas.getBoundingClientRect();
+  const scaleX = dgCanvas.width / rect.width;
+  const scaleY = dgCanvas.height / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+}
+
+function startDraw(e){
+  dgDrawing = true;
+  const p = getCanvasPos(e);
+  dgCtx.beginPath();
+  dgCtx.moveTo(p.x, p.y);
+  e.preventDefault();
+}
+function moveDraw(e){
+  if(!dgDrawing) return;
+  const p = getCanvasPos(e);
+  dgCtx.lineTo(p.x, p.y);
+  dgCtx.stroke();
+  e.preventDefault();
+}
+function endDraw(e){
+  dgDrawing = false;
+}
+
+dgCanvas.addEventListener('mousedown', startDraw);
+dgCanvas.addEventListener('mousemove', moveDraw);
+window.addEventListener('mouseup', endDraw);
+dgCanvas.addEventListener('touchstart', startDraw, { passive:false });
+dgCanvas.addEventListener('touchmove', moveDraw, { passive:false });
+dgCanvas.addEventListener('touchend', endDraw);
+
+dgCorrectBtn.addEventListener('click', () => resolveDrawRound(dgVal));
+dgSkipBtn.addEventListener('click', () => resolveDrawRound(0));
+
+function resolveDrawRound(pointsAwarded){
+  if(dgRoundFinalized) return;
+  dgRoundFinalized = true;
+  clearInterval(dgTimerHandle);
+  scores[dgTeamIdx] += pointsAwarded;
+  usedCells.add(dgKey);
+  drawGameOverlay.classList.remove('show');
+  renderScoreboard();
+  renderBoard();
+  checkGameComplete();
+}
+
+// ---- Winner screen ----
+const winnerOverlay = document.getElementById('winnerOverlay');
+const confettiLayer = document.getElementById('confettiLayer');
+const winnerTitle = document.getElementById('winnerTitle');
+const winnerName = document.getElementById('winnerName');
+const winnerScoreEl = document.getElementById('winnerScore');
+const winnerMsg = document.getElementById('winnerMsg');
+const winnerFinalScores = document.getElementById('winnerFinalScores');
+
+const CHEER_MESSAGES = [
+  "أداء رائع من الجميع! مبروك للفريق الفائز 🎉",
+  "منافسة حماسية من أولها لآخرها، تستاهلون التصفيق 👏",
+  "ثقافة عالية ومعلومات قوية من كل الفرق، أحسنتم!",
+  "فوز مستحق عن جدارة، والفرق الثانية قدمت أداء ممتاز أيضًا!",
+  "معلومات، سرعة بديهة، وحماس ما شاء الله — مبروك!"
+];
+
+function launchConfetti(){
+  confettiLayer.innerHTML = '';
+  const colors = ['#e0a83c','#26b09b','#d65a4a','#5b8fd6','#a06bd6','#f4c563'];
+  const count = 60;
+  for(let i = 0; i < count; i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
+    piece.style.animationDelay = (Math.random() * 0.6) + 's';
+    confettiLayer.appendChild(piece);
+  }
+}
+
+function showWinner(){
+  const maxScore = Math.max(...scores);
+  const winners = teams.filter((t, i) => scores[i] === maxScore);
+
+  if(winners.length === 1){
+    winnerTitle.textContent = 'الفريق الفائز';
+    winnerName.textContent = winners[0].name;
+  } else {
+    winnerTitle.textContent = 'تعادل رائع بين';
+    winnerName.textContent = winners.map(w => w.name).join(' و ');
+  }
+  winnerScoreEl.textContent = maxScore + ' نقطة';
+  winnerMsg.textContent = CHEER_MESSAGES[Math.floor(Math.random() * CHEER_MESSAGES.length)];
+
+  winnerFinalScores.innerHTML = '';
+  teams
+    .map((t, i) => ({ t, score: scores[i] }))
+    .sort((a, b) => b.score - a.score)
+    .forEach(({ t, score }) => {
+      const el = document.createElement('div');
+      el.className = 'mini-score';
+      el.style.setProperty('--team-color', t.color);
+      el.textContent = `${t.name}: ${score}`;
+      winnerFinalScores.appendChild(el);
+    });
+
+  launchConfetti();
+  winnerOverlay.classList.add('show');
+}
+
+document.getElementById('winnerNewRoundBtn').addEventListener('click', () => {
+  winnerOverlay.classList.remove('show');
+  usedCells = new Set();
+  scores = teams.map(() => 0);
+  renderScoreboard();
+  renderBoard();
+});
+
+document.getElementById('winnerFullResetBtn').addEventListener('click', () => {
+  winnerOverlay.classList.remove('show');
+  usedCells = new Set();
+  selectedCategories = [];
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('setup').style.display = 'block';
+});
+
+// ---- Custom confirm (avoids blocked native confirm() in sandboxed viewers) ----
+const confirmOverlay = document.getElementById('confirmOverlay');
+const confirmMsg = document.getElementById('confirmMsg');
+const confirmYes = document.getElementById('confirmYes');
+const confirmNo = document.getElementById('confirmNo');
+let pendingConfirmAction = null;
+
+function askConfirm(message, onYes){
+  confirmMsg.textContent = message;
+  pendingConfirmAction = onYes;
+  confirmOverlay.classList.add('show');
+}
+confirmYes.addEventListener('click', () => {
+  confirmOverlay.classList.remove('show');
+  if(pendingConfirmAction) pendingConfirmAction();
+  pendingConfirmAction = null;
+});
+confirmNo.addEventListener('click', () => {
+  confirmOverlay.classList.remove('show');
+  pendingConfirmAction = null;
+});
+
+document.getElementById('newRoundBtn').addEventListener('click', () => {
+  askConfirm('تبدأ جولة جديدة بنفس الفرق والفئات؟ النقاط سترجع للصفر.', () => {
+    usedCells = new Set();
+    scores = teams.map(() => 0);
+    renderScoreboard();
+    renderBoard();
+  });
+});
+
+document.getElementById('fullResetBtn').addEventListener('click', () => {
+  askConfirm('هل تريد الرجوع لتغيير الفرق والفئات من جديد؟', () => {
+    usedCells = new Set();
+    selectedCategories = [];
+    document.getElementById('game').style.display = 'none';
+    document.getElementById('setup').style.display = 'block';
+  });
+});
+</script>
+</body>
+</html>
